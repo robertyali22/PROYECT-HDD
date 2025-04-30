@@ -1,21 +1,36 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import './App.css'
+
 import { DashboardPage } from './pages/DashboardPage'
+import { AuditoriaPage } from './pages/AuditoriaPage'
+import { PrivateLatout } from './layaout/PrivateLatout'
 
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={ <DashboardPage /> } />
-     
-        <Route path='/dashboard' element={ <DashboardPage /> } />
+        <Route path='/' element={<DashboardPage />} />
+      
+
+
+        <Route element={<PrivateLatout />}>
+          <Route path='/dashboard' element={<DashboardPage />} />
     
+          <Route path='/auditoria' element={<AuditoriaPage />} />
+ 
+        </Route>
+
 
       </Routes>
       <Toaster />
     </BrowserRouter>
+
+
+
+
+
+
   )
 }
 
