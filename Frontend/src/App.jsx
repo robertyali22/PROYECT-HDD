@@ -5,6 +5,8 @@ import { DashboardPage } from './pages/DashboardPage'
 import { AuditoriaPage } from './pages/AuditoriaPage'
 import { PrivateLatout } from './layaout/PrivateLatout'
 import { RegistroPage } from './pages/RegistroSoldaduraPage'
+import { InventarioPage } from './pages/InventarioPage'
+
 
 function App() {
 
@@ -19,6 +21,7 @@ function App() {
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/registro' element={<RegistroPage/>}/>
           <Route path='/auditoria' element={<AuditoriaPage />} />
+          <Route path='/inventario' element={<InventarioPage />} />
  
         </Route>
 
