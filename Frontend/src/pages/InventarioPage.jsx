@@ -251,10 +251,10 @@ export function InventarioPage() {
 
     // --- Renderizado ---
     return (
-        <div className="sm:ml-64 bg-slate-100 min-h-screen text-slate-800">
+        <div className="sm:ml-64 bg-slate-100 min-h-screen">
             {/* Contenido Principal */}
-            <div className="container max-w-7xl mx-auto p-4 md:p-8">
-                <h1 className="text-2xl font-semibold mb-6 mt-10 text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Inventario de Materiales</h1>
+            <div className="cmx-w-7xl mx-auto p-5">
+                <h1 className="text-2xl font-semibold mb-6  text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Inventario de Materiales</h1>
 
                 {/* Pestañas */}
                 <div className="flex mb-6 border-b border-slate-300 overflow-x-auto">
