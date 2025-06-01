@@ -2,7 +2,45 @@ import React, { useState, useEffect, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 
 export function RegistroPage() {
-  
+  const [activeTab, setActiveTab] = useState('registro');
+
+  // Array para guardar
+  // Form state
+  const [projectCode, setProjectCode] = useState('');
+  const [executionDate, setExecutionDate] = useState('');
+  const [weldType, setWeldType] = useState('');
+  const [baseMaterial, setBaseMaterial] = useState('');
+  const [description, setDescription] = useState('');
+  const [thickness, setThickness] = useState('');
+  const [position, setPosition] = useState('');
+  const [fillerMaterial, setFillerMaterial] = useState('');
+  const [electrodeDiameter, setElectrodeDiameter] = useState('');
+  const [amperage, setAmperage] = useState('');
+  const [voltage, setVoltage] = useState('');
+  const [images, setImages] = useState([]);
+  const [observations, setObservations] = useState('');
+  const [signature, setSignature] = useState('');
+  const sigPadRef = useRef(null);
+
+  // Records array
+  const [records, setRecords] = useState([]);
+
+  const handleImageChange = e => {
+    const files = Array.from(e.target.files);
+    const urls = files.map(file => URL.createObjectURL(file));
+    setImages(urls);
+  };
+
+  const clearSignature = () => {
+    sigPadRef.current.clear();
+    setSignature('');
+  };
+
+  const saveSignature = () => {
+    if (sigPadRef.current && !sigPadRef.current.isEmpty()) {
+      setSignature(sigPadRef.current.getTrimmedCanvas().toDataURL('image/png'));
+    }
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
