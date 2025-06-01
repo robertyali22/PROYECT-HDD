@@ -14,7 +14,7 @@ export function DashboardPage() {
 
   useEffect(() => {
     const tiendas = [
-      { nombre: "Soldaduras Lima" },
+      { nombre: "Soldaduras Centro" },
       { nombre: "Soldaduras Norte" },
       { nombre: "Soldaduras Sur" },
     ];
@@ -65,7 +65,7 @@ export function DashboardPage() {
       
       <div className="sm:ml-64 bg-slate-100">
         <div className="p-4 mt-16">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-4">
+          <div className="grid grid-cols-13 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-4">
 
             <Card 
               icon={<Package size={26} />}
