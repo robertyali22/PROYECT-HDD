@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { NavBar} from '../components/Navbar';
-import { SideBar } from '../components/Sidebar';
+
 
 // --- Ejemplos Iniciales ---
 const initialPendingInspectionsData = [
