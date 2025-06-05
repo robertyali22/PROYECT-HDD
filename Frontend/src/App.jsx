@@ -6,6 +6,9 @@ import { AuditoriaPage } from './pages/AuditoriaPage'
 import { PrivateLatout } from './layaout/PrivateLatout'
 import { RegistroPage } from './pages/RegistroSoldaduraPage'
 import { InventarioPage } from './pages/InventarioPage'
+import { GestionUsuarioPage } from './pages/GestionUsuarioPage'
+import { AsignacionTareasPage } from './pages/AsignacionTareasPage'
+
 
 
 function App() {
@@ -22,6 +25,10 @@ function App() {
           <Route path='/registro' element={<RegistroPage/>}/>
           <Route path='/auditoria' element={<AuditoriaPage />} />
           <Route path='/inventario' element={<InventarioPage />} />
+          <Route path='/usuarios' element={<GestionUsuarioPage />} />
+          <Route path='/asignacion' element={<AsignacionTareasPage />} />
+
+          
  
         </Route>
 
