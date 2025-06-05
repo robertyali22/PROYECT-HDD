@@ -4,6 +4,7 @@ import SignatureCanvas from 'react-signature-canvas';
 export function RegistroPage() {
   const [activeTab, setActiveTab] = useState('registro');
 
+  // Array para guardar
   // Form state
   const [projectCode, setProjectCode] = useState('');
   const [executionDate, setExecutionDate] = useState('');

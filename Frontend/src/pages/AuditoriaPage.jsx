@@ -489,37 +489,14 @@ export function AuditoriaPage() {
         <>
             
             <div className="sm:ml-64 bg-slate-100 min-h-screen">
-                {/* Navbar */}
-                <nav className="navbar bg-white p-2 shadow-sm sticky top-0 z-30">
-                    <ul className="nav-links flex list-none gap-6 px-8">
-                        <li>
-                            <a
-                                href="/dashboard"
-                                className="nav-link no-underline text-gray-800 font-medium py-2 relative hover:text-blue-600"
-                            >
-                                Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="/auditoria"
-                                className="nav-link active no-underline text-blue-600 font-medium py-2 relative"
-                            >
-                                Control de Calidad
-                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
-                            </a>
-                        </li>
-                        {/* ... otros links */}
-                    </ul>
-                </nav>
-
-                <div className="container max-w-7xl mx-auto p-4 md:p-8">
+                
+                <div className="mx-w-7xl mx-auto p-5">
                     <h1 className="section-title text-2xl mb-6 text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">
                         Control de Calidad y Auditoría
                     </h1>
 
                     {/* Pestañas */}
-                    <div className="tabs flex mb-6 border-b border-gray-300 overflow-x-auto">
+                    <div className="tabs flMejex mb-6 border-b border-gray-300 overflow-x-auto">
                         {["pendientes", "historico", "reportes"].map((tab) => (
                             <div
                                 key={tab}
