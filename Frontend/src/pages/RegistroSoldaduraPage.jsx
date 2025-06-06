@@ -6,21 +6,6 @@ export function RegistroPage() {
 
   // Array para guardar
   // Form state
-  const [projectCode, setProjectCode] = useState('');
-  const [executionDate, setExecutionDate] = useState('');
-  const [weldType, setWeldType] = useState('');
-  const [baseMaterial, setBaseMaterial] = useState('');
-  const [description, setDescription] = useState('');
-  const [thickness, setThickness] = useState('');
-  const [position, setPosition] = useState('');
-  const [fillerMaterial, setFillerMaterial] = useState('');
-  const [electrodeDiameter, setElectrodeDiameter] = useState('');
-  const [amperage, setAmperage] = useState('');
-  const [voltage, setVoltage] = useState('');
-  const [images, setImages] = useState([]);
-  const [observations, setObservations] = useState('');
-  const [signature, setSignature] = useState('');
-  const sigPadRef = useRef(null);
 
   // Records array
   const [records, setRecords] = useState([]);
