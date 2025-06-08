@@ -1,4 +1,20 @@
-template: |
-  ## What’s Changed
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+version-template: "$MAJOR.$MINOR.$PATCH"
 
-  $CHANGES
+categories:
+  - title: "✨ Características nuevas"
+    labels:
+      - "feature"
+  - title: "🐛 Corrección de errores"
+    labels:
+      - "bug"
+  - title: "🛠 Mejoras"
+    labels:
+      - "enhancement"
+
+change-template: "- $TITLE (#$NUMBER)"
+template: |
+  ## Cambios
+
+  $CHANGES
