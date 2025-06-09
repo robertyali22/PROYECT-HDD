@@ -254,7 +254,7 @@ export function InventarioPage() {
         <div className="sm:ml-64 bg-slate-100 min-h-screen">
             {/* Contenido Principal */}
             <div className="cmx-w-7xl mx-auto p-5">
-                <h1 className="text-2xl font-semibold mb-6  text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Inventario de Materiales</h1>
+                <h1 className="text-2xl font-semibold mb-6  text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Resumen de Stock</h1>
 
                 {/* Pestañas */}
                 <div className="flex mb-6 border-b border-slate-300 overflow-x-auto">
@@ -567,10 +567,10 @@ export function InventarioPage() {
                         <PlusIcon /> Nueva Solicitud de Material
                     </button>
                     <button className="w-full flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
-                        <DownloadIcon /> Exportar Inventario
+                        <DownloadIcon /> Exportar Resumen de Stock
                     </button>
                     <button className="w-full flex items-center justify-center bg-yellow-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-600 transition">
-                        <SettingsIcon /> Configuración de Inventario
+                        <SettingsIcon /> Configuración Resumen de Stock
                     </button>
                 </div>
             </div>
