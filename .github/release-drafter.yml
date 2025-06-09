@@ -17,4 +17,5 @@ change-template: "- $TITLE (#$NUMBER)"
 template: |
   ## Cambios
 
-$CHANGES
+  $CHANGES
+
