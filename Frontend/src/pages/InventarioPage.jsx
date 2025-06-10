@@ -254,7 +254,7 @@ export function InventarioPage() {
         <div className="sm:ml-64 bg-slate-100 min-h-screen text-slate-800">
             {/* Contenido Principal */}
             <div className="container max-w-7xl mx-auto p-4 md:p-8">
-                <h1 className="text-2xl font-semibold mb-6 mt-10 text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Resumen Stock</h1>
+                <h1 className="text-2xl font-semibold mb-6 mt-10 text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Consulta tu Stock</h1>
 
                 {/* Pestañas */}
                 <div className="flex mb-6 border-b border-slate-300 overflow-x-auto">
