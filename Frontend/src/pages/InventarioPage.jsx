@@ -1,5 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
+import { NavBar } from '../components/Navbar';
+import { SideBar } from '../components/Sidebar';
 
 // --- Componentes de Iconos (Sin cambios) ---
 const ElectrodeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>;
@@ -251,405 +253,417 @@ export function InventarioPage() {
 
     // --- Renderizado ---
     return (
-        <div className="sm:ml-64 bg-slate-100 min-h-screen">
-            {/* Contenido Principal */}
-            <div className="cmx-w-7xl mx-auto p-5">
-                <h1 className="text-2xl font-semibold mb-6  text-slate-800 border-b-2 border-blue-500 pb-2 inline-block">Inventario de Materiales</h1>
+        <>
+            <NavBar />
+            <SideBar />
+            <div className="sm:ml-64 bg-slate-100">
+                <div className="p-4 mt-16">
+                    <div className="bg-white rounded-lg shadow p-6">
+                        {/* Header Section */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                            <div>
+                                <h1 className="text-3xl font-bold text-gray-900 mb-2 border-b-2 border-blue-500 pb-2 inline-block">
+                                    Inventario de Materiales
+                                </h1>
 
-                {/* Pestañas */}
-                <div className="flex mb-6 border-b border-slate-300 overflow-x-auto">
-                    {['Resumen', 'Catálogo', 'Movimientos', 'Solicitudes'].map(tab => (
-                        <div
-                            key={tab}
-                            className={`py-3 px-6 cursor-pointer border-b-2 font-medium whitespace-nowrap ${activeTab === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-600 hover:text-slate-800'}`}
-                            onClick={() => handleTabClick(tab)}
-                        >
-                            {tab}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Contenido Condicional */}
-                {activeTab === 'Resumen' && (
-                    <div className="space-y-8">
-                        {criticalItemsCount > 0 && (
-                            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md">
-                                <strong>¡Atención!</strong> {criticalItemsCount} {criticalItemsCount === 1 ? 'material está' : 'materiales están'} por debajo del nivel mínimo requerido.
                             </div>
-                        )}
-
-                        {/* Stats Grid (Usando datos dinámicos) */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {dynamicStatsData.map((stat, index) => (
-                                <div key={index} className="bg-white rounded-lg p-4 shadow">
-                                    <div className="text-sm text-slate-500 mb-1">{stat.title}</div>
-                                    <div className="text-2xl font-bold text-slate-800">{stat.value}</div>
-                                    <div className={`text-xs mt-1 ${stat.changeType === 'up' ? 'text-green-600' : stat.changeType === 'down' ? 'text-red-600' : 'text-slate-500'}`}>
-                                        {stat.changeType === 'up' && <ArrowUpIcon />}
-                                        {stat.changeType === 'down' && <ArrowDownIcon />}
-                                        {stat.change}
-                                    </div>
+                        </div>
+                        {/* Pestañas */}
+                        <div className="flex mb-6 border-b border-slate-300 overflow-x-auto">
+                            {['Resumen', 'Catálogo', 'Movimientos', 'Solicitudes'].map(tab => (
+                                <div
+                                    key={tab}
+                                    className={`py-3 px-6 cursor-pointer border-b-2 font-medium whitespace-nowrap ${activeTab === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-600 hover:text-slate-800'}`}
+                                    onClick={() => handleTabClick(tab)}
+                                >
+                                    {tab}
                                 </div>
                             ))}
                         </div>
 
-                        <h2 className="text-xl font-semibold text-slate-800">Categorías de Materiales</h2>
-
-                        {/* Categories Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                            {categoriesData.map((cat, index) => {
-                                // Contar items por categoría dinámicamente
-                                const countInCategory = inventoryItems.filter(item => item.category === cat.name).length;
-                                return (
-                                    <div
-                                        key={index}
-                                        className="bg-white rounded-lg p-4 shadow text-center cursor-pointer transition transform hover:-translate-y-1 hover:shadow-lg"
-                                        onClick={() => { setActiveTab('Catálogo'); setFilters(prev => ({ ...prev, category: cat.name, search: '', status: '' })); }}
-                                    >
-                                        <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-600">
-                                            {cat.icon}
-                                        </div>
-                                        <div className="font-semibold text-sm mb-1">{cat.name}</div>
-                                        <div className="text-xs text-slate-500">{countInCategory} {countInCategory === 1 ? 'producto' : 'productos'}</div>
+                        {/* Contenido Condicional */}
+                        {activeTab === 'Resumen' && (
+                            <div className="space-y-8">
+                                {criticalItemsCount > 0 && (
+                                    <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md">
+                                        <strong>¡Atención!</strong> {criticalItemsCount} {criticalItemsCount === 1 ? 'material está' : 'materiales están'} por debajo del nivel mínimo requerido.
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                                )}
 
-                {activeTab === 'Catálogo' && (
-                    <div className="space-y-6">
-                        {/* Filtros (Sin cambios) */}
-                        <div className="bg-slate-50 p-4 rounded-lg">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Buscar</label>
-                                    <input
-                                        type="text"
-                                        name="search"
-                                        className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                        placeholder="Buscar material..."
-                                        value={filters.search}
-                                        onChange={handleFilterChange}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
-                                    <select
-                                        name="category"
-                                        className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
-                                        value={filters.category}
-                                        onChange={handleFilterChange}
-                                    >
-                                        <option value="">Todas</option>
-                                        {/* Obtener categorías únicas del inventario */}
-                                        {[...new Set(inventoryItems.map(item => item.category))].sort().map(catName => (
-                                            <option key={catName} value={catName}>{catName}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Estado</label>
-                                    <select
-                                        name="status"
-                                        className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
-                                        value={filters.status}
-                                        onChange={handleFilterChange}
-                                    >
-                                        <option value="">Todos</option>
-                                        <option value="critical">Crítico</option>
-                                        <option value="low">Bajo</option>
-                                        <option value="normal">Normal</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card Catálogo */}
-                        <div className="bg-white rounded-lg p-4 md:p-6 shadow">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                                <h2 className="text-xl font-semibold text-slate-800">Catálogo de Materiales ({filteredInventoryItems.length})</h2>
-                                <button
-                                    className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
-                                    onClick={() => setShowModal(true)}
-                                >
-                                    <PlusIcon /> Añadir Producto
-                                </button>
-                            </div>
-
-                            {/* Listado de Productos */}
-                            <div className="space-y-4">
-                                {filteredInventoryItems.map(item => {
-                                    const stockInfo = getStockLevel(item.stock, item.minStock, item.idealStock);
-                                    const categoryInfo = categoriesData.find(c => c.name === item.category); // Para el icono
-                                    const itemProgress = calculateProgress(item.stock, item.idealStock);
-
-                                    return (
-                                        <div key={item.id} className="flex flex-col md:flex-row items-start md:items-center p-4 border border-slate-200 rounded-md bg-white gap-4">
-                                            <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center flex-shrink-0 text-blue-600">
-                                                {categoryInfo?.icon || <MetalIcon />}
-                                            </div>
-                                            <div className="flex-grow min-w-0">
-                                                <div className="font-semibold text-slate-800">{item.name}</div>
-                                                <div className="text-xs text-slate-500 mt-1">
-                                                    Categoría: {item.category} | SKU: {item.sku} | Ubic: {item.location || 'N/A'}
-                                                </div>
-                                                <div className="flex items-center mt-2 gap-2">
-                                                    <div className="w-full md:w-1/2 bg-slate-200 rounded-full h-2 overflow-hidden">
-                                                        <div
-                                                            className={`h-full rounded-full ${stockInfo.progressClass}`}
-                                                            style={{ width: `${itemProgress}%` }}
-                                                        ></div>
-                                                    </div>
-                                                    <div className={`text-sm font-medium ${stockInfo.className} whitespace-nowrap`}>
-                                                        {item.stock} {item.unit} ({stockInfo.level})
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {/* Acciones Catálogo */}
-                                            <div className="flex items-center gap-2 mt-2 md:mt-0 flex-shrink-0">
-                                                <div className="flex items-center">
-                                                    <button className="w-7 h-7 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-l-md hover:bg-slate-200 text-slate-700" onClick={() => handleQuantityChange(item.id, -1)}>-</button>
-                                                    <input type="number" className="w-12 h-7 text-center border-t border-b border-slate-300 text-sm focus:outline-none appearance-none [-moz-appearance:textfield]" value={itemQuantities[item.id] || 1} readOnly />
-                                                    <button className="w-7 h-7 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-r-md hover:bg-slate-200 text-slate-700" onClick={() => handleQuantityChange(item.id, 1)}>+</button>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleAddItemToRequest(item)}
-                                                    className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-700 transition"
-                                                    title={`Añadir ${itemQuantities[item.id] || 1} a la solicitud`}
-                                                >
-                                                    Añadir
-                                                </button>
+                                {/* Stats Grid (Usando datos dinámicos) */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    {dynamicStatsData.map((stat, index) => (
+                                        <div key={index} className="bg-white rounded-lg p-4 shadow">
+                                            <div className="text-sm text-slate-500 mb-1">{stat.title}</div>
+                                            <div className="text-2xl font-bold text-slate-800">{stat.value}</div>
+                                            <div className={`text-xs mt-1 ${stat.changeType === 'up' ? 'text-green-600' : stat.changeType === 'down' ? 'text-red-600' : 'text-slate-500'}`}>
+                                                {stat.changeType === 'up' && <ArrowUpIcon />}
+                                                {stat.changeType === 'down' && <ArrowDownIcon />}
+                                                {stat.change}
                                             </div>
                                         </div>
-                                    );
-                                })}
-
-                                {filteredInventoryItems.length === 0 && (
-                                    <p className="text-center text-slate-500 py-8">No se encontraron materiales que coincidan con los filtros.</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'Movimientos' && (
-                    <div className="bg-white rounded-lg p-4 md:p-6 shadow">
-                        <h2 className="text-xl font-semibold mb-4">Historial de Movimientos</h2>
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[800px]">
-                                <thead>
-                                    <tr className="bg-slate-50">
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Fecha</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Tipo</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Material (ID)</th>
-                                        <th className="p-3 text-right text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Cantidad</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Usuario</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Notas</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-200">
-                                    {movements.map(mov => (
-                                        <tr key={mov.id} className="hover:bg-slate-50">
-                                            <td className="p-3 text-sm text-slate-700 whitespace-nowrap">{formatDate(mov.date)}</td>
-                                            <td className="p-3 text-sm">
-                                                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getMovementTypeClass(mov.type)}`}>
-                                                    {mov.type}
-                                                </span>
-                                            </td>
-                                            <td className="p-3 text-sm text-slate-700">{mov.itemName} ({mov.itemId})</td>
-                                            <td className={`p-3 text-sm text-right font-medium ${mov.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                {mov.quantity > 0 ? `+${mov.quantity}` : mov.quantity}
-                                            </td>
-                                            <td className="p-3 text-sm text-slate-700">{mov.user}</td>
-                                            <td className="p-3 text-sm text-slate-500">{mov.notes}</td>
-                                        </tr>
                                     ))}
-                                    {movements.length === 0 && (
-                                        <tr>
-                                            <td colSpan="6" className="p-4 text-center text-slate-500">No hay movimientos registrados.</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
+                                </div>
 
-                {activeTab === 'Solicitudes' && (
-                    <div className="bg-white rounded-lg p-4 md:p-6 shadow">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                            <h2 className="text-xl font-semibold text-slate-800">Solicitudes de Material ({requests.length})</h2>
+                                <h2 className="text-xl font-semibold text-slate-800">Categorías de Materiales</h2>
+
+                                {/* Categories Grid */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                    {categoriesData.map((cat, index) => {
+                                        // Contar items por categoría dinámicamente
+                                        const countInCategory = inventoryItems.filter(item => item.category === cat.name).length;
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="bg-white rounded-lg p-4 shadow text-center cursor-pointer transition transform hover:-translate-y-1 hover:shadow-lg"
+                                                onClick={() => { setActiveTab('Catálogo'); setFilters(prev => ({ ...prev, category: cat.name, search: '', status: '' })); }}
+                                            >
+                                                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-600">
+                                                    {cat.icon}
+                                                </div>
+                                                <div className="font-semibold text-sm mb-1">{cat.name}</div>
+                                                <div className="text-xs text-slate-500">{countInCategory} {countInCategory === 1 ? 'producto' : 'productos'}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'Catálogo' && (
+                            <div className="space-y-6">
+                                {/* Filtros (Sin cambios) */}
+                                <div className="bg-slate-50 p-4 rounded-lg">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Buscar</label>
+                                            <input
+                                                type="text"
+                                                name="search"
+                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                                placeholder="Buscar material..."
+                                                value={filters.search}
+                                                onChange={handleFilterChange}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
+                                            <select
+                                                name="category"
+                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                                value={filters.category}
+                                                onChange={handleFilterChange}
+                                            >
+                                                <option value="">Todas</option>
+                                                {/* Obtener categorías únicas del inventario */}
+                                                {[...new Set(inventoryItems.map(item => item.category))].sort().map(catName => (
+                                                    <option key={catName} value={catName}>{catName}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Estado</label>
+                                            <select
+                                                name="status"
+                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                                value={filters.status}
+                                                onChange={handleFilterChange}
+                                            >
+                                                <option value="">Todos</option>
+                                                <option value="critical">Crítico</option>
+                                                <option value="low">Bajo</option>
+                                                <option value="normal">Normal</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Card Catálogo */}
+                                <div className="bg-white rounded-lg p-4 md:p-6 shadow">
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                        <h2 className="text-xl font-semibold text-slate-800">Catálogo de Materiales ({filteredInventoryItems.length})</h2>
+                                        <button
+                                            className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
+                                            onClick={() => setShowModal(true)}
+                                        >
+                                            <PlusIcon /> Añadir Producto
+                                        </button>
+                                    </div>
+
+                                    {/* Listado de Productos */}
+                                    <div className="space-y-4">
+                                        {filteredInventoryItems.map(item => {
+                                            const stockInfo = getStockLevel(item.stock, item.minStock, item.idealStock);
+                                            const categoryInfo = categoriesData.find(c => c.name === item.category); // Para el icono
+                                            const itemProgress = calculateProgress(item.stock, item.idealStock);
+
+                                            return (
+                                                <div key={item.id} className="flex flex-col md:flex-row items-start md:items-center p-4 border border-slate-200 rounded-md bg-white gap-4">
+                                                    <div className="w-12 h-12 bg-slate-100 rounded-md flex items-center justify-center flex-shrink-0 text-blue-600">
+                                                        {categoryInfo?.icon || <MetalIcon />}
+                                                    </div>
+                                                    <div className="flex-grow min-w-0">
+                                                        <div className="font-semibold text-slate-800">{item.name}</div>
+                                                        <div className="text-xs text-slate-500 mt-1">
+                                                            Categoría: {item.category} | SKU: {item.sku} | Ubic: {item.location || 'N/A'}
+                                                        </div>
+                                                        <div className="flex items-center mt-2 gap-2">
+                                                            <div className="w-full md:w-1/2 bg-slate-200 rounded-full h-2 overflow-hidden">
+                                                                <div
+                                                                    className={`h-full rounded-full ${stockInfo.progressClass}`}
+                                                                    style={{ width: `${itemProgress}%` }}
+                                                                ></div>
+                                                            </div>
+                                                            <div className={`text-sm font-medium ${stockInfo.className} whitespace-nowrap`}>
+                                                                {item.stock} {item.unit} ({stockInfo.level})
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {/* Acciones Catálogo */}
+                                                    <div className="flex items-center gap-2 mt-2 md:mt-0 flex-shrink-0">
+                                                        <div className="flex items-center">
+                                                            <button className="w-7 h-7 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-l-md hover:bg-slate-200 text-slate-700" onClick={() => handleQuantityChange(item.id, -1)}>-</button>
+                                                            <input type="number" className="w-12 h-7 text-center border-t border-b border-slate-300 text-sm focus:outline-none appearance-none [-moz-appearance:textfield]" value={itemQuantities[item.id] || 1} readOnly />
+                                                            <button className="w-7 h-7 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-r-md hover:bg-slate-200 text-slate-700" onClick={() => handleQuantityChange(item.id, 1)}>+</button>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleAddItemToRequest(item)}
+                                                            className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-700 transition"
+                                                            title={`Añadir ${itemQuantities[item.id] || 1} a la solicitud`}
+                                                        >
+                                                            Añadir
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+
+                                        {filteredInventoryItems.length === 0 && (
+                                            <p className="text-center text-slate-500 py-8">No se encontraron materiales que coincidan con los filtros.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'Movimientos' && (
+                            <div className="bg-white rounded-lg p-4 md:p-6 shadow">
+                                <h2 className="text-xl font-semibold mb-4">Historial de Movimientos</h2>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full min-w-[800px]">
+                                        <thead>
+                                            <tr className="bg-slate-50">
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Fecha</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Tipo</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Material (ID)</th>
+                                                <th className="p-3 text-right text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Cantidad</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Usuario</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Notas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-200">
+                                            {movements.map(mov => (
+                                                <tr key={mov.id} className="hover:bg-slate-50">
+                                                    <td className="p-3 text-sm text-slate-700 whitespace-nowrap">{formatDate(mov.date)}</td>
+                                                    <td className="p-3 text-sm">
+                                                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getMovementTypeClass(mov.type)}`}>
+                                                            {mov.type}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-3 text-sm text-slate-700">{mov.itemName} ({mov.itemId})</td>
+                                                    <td className={`p-3 text-sm text-right font-medium ${mov.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                        {mov.quantity > 0 ? `+${mov.quantity}` : mov.quantity}
+                                                    </td>
+                                                    <td className="p-3 text-sm text-slate-700">{mov.user}</td>
+                                                    <td className="p-3 text-sm text-slate-500">{mov.notes}</td>
+                                                </tr>
+                                            ))}
+                                            {movements.length === 0 && (
+                                                <tr>
+                                                    <td colSpan="6" className="p-4 text-center text-slate-500">No hay movimientos registrados.</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'Solicitudes' && (
+                            <div className="bg-white rounded-lg p-4 md:p-6 shadow">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                                    <h2 className="text-xl font-semibold text-slate-800">Solicitudes de Material ({requests.length})</h2>
+                                    <button
+                                        onClick={handleNewRequest}
+                                        className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
+                                    >
+                                        <PlusIcon /> Nueva Solicitud
+                                    </button>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full min-w-[700px]">
+                                        <thead>
+                                            <tr className="bg-slate-50">
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">ID</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Fecha</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Solicitante</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Proyecto</th>
+                                                <th className="p-3 text-center text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Items</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Estado</th>
+                                                <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-200">
+                                            {requests.map(req => (
+                                                <tr key={req.id} className="hover:bg-slate-50">
+                                                    <td className="p-3 text-sm text-slate-700">{req.id}</td>
+                                                    <td className="p-3 text-sm text-slate-700 whitespace-nowrap">{req.date}</td>
+                                                    <td className="p-3 text-sm text-slate-700">{req.applicant}</td>
+                                                    <td className="p-3 text-sm text-slate-700">{req.project}</td>
+                                                    <td className="p-3 text-sm text-slate-700 text-center">{req.items}</td>
+                                                    <td className="p-3 text-sm">
+                                                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(req.status)}`}>
+                                                            {req.status}
+                                                        </span>
+                                                    </td>
+                                                    {/* Acciones Solicitudes */}
+                                                    <td className="p-3 text-sm">
+                                                        <div className="flex gap-1">
+                                                            {req.status === 'Pendiente' ? (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => handleApproveRequest(req.id)}
+                                                                        title="Aprobar Solicitud"
+                                                                        className="p-1 rounded text-green-600 hover:bg-green-100"
+                                                                    >
+                                                                        <CheckIcon />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleRejectRequest(req.id)}
+                                                                        title="Rechazar Solicitud"
+                                                                        className="p-1 rounded text-red-600 hover:bg-red-100"
+                                                                    >
+                                                                        <XIcon />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => handleRequestDetails(req.id)}
+                                                                    title="Ver Detalles"
+                                                                    className="p-1 rounded text-blue-600 hover:bg-blue-100"
+                                                                >
+                                                                    <EyeIcon />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {requests.length === 0 && (
+                                                <tr>
+                                                    <td colSpan="7" className="p-4 text-center text-slate-500">No hay solicitudes registradas.</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Botones de Acción Globales (Sin cambios) */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
                             <button
                                 onClick={handleNewRequest}
-                                className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
+                                className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
                             >
-                                <PlusIcon /> Nueva Solicitud
+                                <PlusIcon /> Nueva Solicitud de Material
+                            </button>
+                            <button className="w-full flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
+                                <DownloadIcon /> Exportar Inventario
+                            </button>
+                            <button className="w-full flex items-center justify-center bg-yellow-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-600 transition">
+                                <SettingsIcon /> Configuración de Inventario
                             </button>
                         </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[700px]">
-                                <thead>
-                                    <tr className="bg-slate-50">
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">ID</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Fecha</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Solicitante</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Proyecto</th>
-                                        <th className="p-3 text-center text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Items</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Estado</th>
-                                        <th className="p-3 text-left text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-200">
-                                    {requests.map(req => (
-                                        <tr key={req.id} className="hover:bg-slate-50">
-                                            <td className="p-3 text-sm text-slate-700">{req.id}</td>
-                                            <td className="p-3 text-sm text-slate-700 whitespace-nowrap">{req.date}</td>
-                                            <td className="p-3 text-sm text-slate-700">{req.applicant}</td>
-                                            <td className="p-3 text-sm text-slate-700">{req.project}</td>
-                                            <td className="p-3 text-sm text-slate-700 text-center">{req.items}</td>
-                                            <td className="p-3 text-sm">
-                                                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(req.status)}`}>
-                                                    {req.status}
-                                                </span>
-                                            </td>
-                                            {/* Acciones Solicitudes */}
-                                            <td className="p-3 text-sm">
-                                                <div className="flex gap-1">
-                                                    {req.status === 'Pendiente' ? (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleApproveRequest(req.id)}
-                                                                title="Aprobar Solicitud"
-                                                                className="p-1 rounded text-green-600 hover:bg-green-100"
-                                                            >
-                                                                <CheckIcon />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleRejectRequest(req.id)}
-                                                                title="Rechazar Solicitud"
-                                                                className="p-1 rounded text-red-600 hover:bg-red-100"
-                                                            >
-                                                                <XIcon />
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => handleRequestDetails(req.id)}
-                                                            title="Ver Detalles"
-                                                            className="p-1 rounded text-blue-600 hover:bg-blue-100"
-                                                        >
-                                                            <EyeIcon />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {requests.length === 0 && (
-                                        <tr>
-                                            <td colSpan="7" className="p-4 text-center text-slate-500">No hay solicitudes registradas.</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
-                )}
 
-                {/* Botones de Acción Globales (Sin cambios) */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                    <button
-                        onClick={handleNewRequest}
-                        className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
-                    >
-                        <PlusIcon /> Nueva Solicitud de Material
-                    </button>
-                    <button className="w-full flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
-                        <DownloadIcon /> Exportar Inventario
-                    </button>
-                    <button className="w-full flex items-center justify-center bg-yellow-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-600 transition">
-                        <SettingsIcon /> Configuración de Inventario
-                    </button>
+                    {/* Modal para añadir producto (Sin cambios en la estructura, solo en handleSaveProduct) */}
+                    {showModal && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+                                {/* Modal Header */}
+                                <div className="flex justify-between items-center p-4 border-b border-slate-200">
+                                    <h2 className="text-lg font-semibold text-slate-800">Añadir Nuevo Producto</h2>
+                                    <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+                                </div>
+                                {/* Modal Body */}
+                                <div className="p-6 space-y-4 overflow-y-auto">
+                                    {/* Campos del formulario (sin cambios) */}
+                                    <div className="form-group">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Nombre del Producto</label>
+                                        <input type="text" name="name" value={newItem.name} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ingrese nombre" />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
+                                            <select name="category" value={newItem.category} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option value="">Seleccione categoría</option>
+                                                {categoriesData.map(cat => <option key={cat.name} value={cat.name}>{cat.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
+                                            <input type="text" name="sku" value={newItem.sku} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="SKU del producto" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Inicial</label>
+                                            <input type="number" name="stock" value={newItem.stock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Cantidad" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Unidad de Medida</label>
+                                            <select name="unit" value={newItem.unit} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                                <option value="unit">Unidad</option>
+                                                <option value="kg">Kilogramos</option>
+                                                <option value="meter">Metros</option>
+                                                <option value="liter">Litros</option>
+                                                <option value="pack">Paquete</option>
+                                                <option value="cilindros">Cilindros</option>
+                                                <option value="carretes">Carretes</option>
+                                                <option value="unidades">Unidades</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Mínimo</label>
+                                            <input type="number" name="minStock" value={newItem.minStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel mínimo" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Ideal</label>
+                                            <input type="number" name="idealStock" value={newItem.idealStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel ideal" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Ubicación en Almacén</label>
+                                        <input type="text" name="location" value={newItem.location} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ejemplo: Estante A-12" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
+                                        <textarea name="description" value={newItem.description} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" rows="3" placeholder="Descripción del producto"></textarea>
+                                    </div>
+                                </div>
+                                {/* Modal Footer */}
+                                <div className="flex justify-end p-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
+                                    <button onClick={() => setShowModal(false)} className="bg-slate-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-600 transition mr-2">Cancelar</button>
+                                    <button onClick={handleSaveProduct} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition">Guardar Producto</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
-
-            {/* Modal para añadir producto (Sin cambios en la estructura, solo en handleSaveProduct) */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-                        {/* Modal Header */}
-                        <div className="flex justify-between items-center p-4 border-b border-slate-200">
-                            <h2 className="text-lg font-semibold text-slate-800">Añadir Nuevo Producto</h2>
-                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
-                        </div>
-                        {/* Modal Body */}
-                        <div className="p-6 space-y-4 overflow-y-auto">
-                            {/* Campos del formulario (sin cambios) */}
-                            <div className="form-group">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre del Producto</label>
-                                <input type="text" name="name" value={newItem.name} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ingrese nombre" />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
-                                    <select name="category" value={newItem.category} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                        <option value="">Seleccione categoría</option>
-                                        {categoriesData.map(cat => <option key={cat.name} value={cat.name}>{cat.name}</option>)}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
-                                    <input type="text" name="sku" value={newItem.sku} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="SKU del producto" />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Stock Inicial</label>
-                                    <input type="number" name="stock" value={newItem.stock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Cantidad" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Unidad de Medida</label>
-                                    <select name="unit" value={newItem.unit} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                        <option value="unit">Unidad</option>
-                                        <option value="kg">Kilogramos</option>
-                                        <option value="meter">Metros</option>
-                                        <option value="liter">Litros</option>
-                                        <option value="pack">Paquete</option>
-                                        <option value="cilindros">Cilindros</option>
-                                        <option value="carretes">Carretes</option>
-                                        <option value="unidades">Unidades</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Stock Mínimo</label>
-                                    <input type="number" name="minStock" value={newItem.minStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel mínimo" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Stock Ideal</label>
-                                    <input type="number" name="idealStock" value={newItem.idealStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel ideal" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Ubicación en Almacén</label>
-                                <input type="text" name="location" value={newItem.location} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ejemplo: Estante A-12" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
-                                <textarea name="description" value={newItem.description} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" rows="3" placeholder="Descripción del producto"></textarea>
-                            </div>
-                        </div>
-                        {/* Modal Footer */}
-                        <div className="flex justify-end p-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
-                            <button onClick={() => setShowModal(false)} className="bg-slate-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-600 transition mr-2">Cancelar</button>
-                            <button onClick={handleSaveProduct} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition">Guardar Producto</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+        </>
     );
 }

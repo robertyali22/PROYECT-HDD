@@ -86,8 +86,7 @@ export function NavBar() {
           </div>
         </div>
       </nav>
-      {/* Espaciador para compensar la altura del navbar fijo */}
-      <div className="h-16"></div>
+      
     </>
   )
 }

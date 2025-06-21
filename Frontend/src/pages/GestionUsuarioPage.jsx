@@ -6,20 +6,55 @@ import { SideBar } from '../components/Sidebar';
 
 // Componente principal de Gestión de Usuarios
 export function GestionUsuarioPage() {
-    const [activeTab, setActiveTab] = useState('usuarios');
-    const [showNewUserModal, setShowNewUserModal] = useState(false);
+    const [usuarios, setUsuarios] = useState([]);
     const [showEditUserModal, setShowEditUserModal] = useState(false);
     const [userToEdit, setUserToEdit] = useState(null);
-    const [showCertificationsField, setShowCertificationsField] = useState(false);
 
-    const handleRoleChange = (e) => {
-        const role = e.target.value;
-        setShowCertificationsField(role === 'soldador' || role === 'inspector');
+    useEffect(() => {
+        cargarUsuarios();
+    }, []);
+
+    const cargarUsuarios = async () => {
+        try {
+            const res = await obtenerUsuarios();
+            const datos = res.data.map(usuario => ({
+                ...usuario,
+                name: `${usuario.nombre} ${usuario.apellido}`,
+                initials: `${usuario.nombre[0]}${usuario.apellido[0]}`.toUpperCase(),
+                since: new Date(usuario.fechaCreacion).toLocaleDateString('es-PE'),
+                status: usuario.estado ? 'Activo' : 'Inactivo',
+                lastAccess: 'No disponible'
+            }));
+            setUsuarios(datos);
+        } catch (error) {
+            console.error('Error al obtener usuarios:', error);
+        }
     };
 
-    const handleEditUser = (user) => {
-        setUserToEdit(user);
+    const handleEditUser = (usuario) => {
+        setUserToEdit({ ...usuario });
         setShowEditUserModal(true);
+    };
+
+    const handleChangeEdit = (e) => {
+        const { name, value } = e.target;
+        setUserToEdit({ ...userToEdit, [name]: value });
+    };
+
+    const guardarCambios = async () => {
+        try {
+            await actualizarUsuario(userToEdit.id, {
+                nombre: userToEdit.nombre,
+                apellido: userToEdit.apellido,
+                email: userToEdit.email,
+                rol: userToEdit.rol,
+                estado: userToEdit.estado === 'Activo' ? 1 : 0,
+            });
+            setShowEditUserModal(false);
+            cargarUsuarios();
+        } catch (error) {
+            console.error('Error al actualizar usuario:', error);
+        }
     };
 
     return (
