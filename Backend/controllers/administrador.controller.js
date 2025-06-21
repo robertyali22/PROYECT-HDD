@@ -2,7 +2,7 @@ const db = require('../models');
 const Administrador = db.Administrador;
 
 // Crear un nuevo administrador
-exports.crearAdministrador = async (req, res) => {
+exports.createAdministrador = async (req, res) => {
   try {
     const administrador = await Administrador.create(req.body);
     res.status(201).json(administrador);
@@ -12,7 +12,7 @@ exports.crearAdministrador = async (req, res) => {
 };
 
 // Obtener todos los administradores
-exports.obtenerAdministradores = async (req, res) => {
+exports.readAdministradores = async (req, res) => {
   try {
     const administradores = await Administrador.findAll();
     res.json(administradores);
@@ -22,7 +22,7 @@ exports.obtenerAdministradores = async (req, res) => {
 };
 
 // Obtener administrador por ID
-exports.obtenerAdministradorPorId = async (req, res) => {
+exports.readAdministrador = async (req, res) => {
   try {
     const administrador = await Administrador.findByPk(req.params.id);
     if (administrador) {
@@ -36,7 +36,7 @@ exports.obtenerAdministradorPorId = async (req, res) => {
 };
 
 // Actualizar un administrador
-exports.actualizarAdministrador = async (req, res) => {
+exports.updateAdministrador = async (req, res) => {
   try {
     const administrador = await Administrador.findByPk(req.params.id);
     if (administrador) {
@@ -51,7 +51,7 @@ exports.actualizarAdministrador = async (req, res) => {
 };
 
 // Eliminar un administrador
-exports.eliminarAdministrador = async (req, res) => {
+exports.deleteAdministrador = async (req, res) => {
   try {
     const administrador = await Administrador.findByPk(req.params.id);
     if (administrador) {

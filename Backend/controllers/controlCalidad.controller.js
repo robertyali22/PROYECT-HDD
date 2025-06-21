@@ -2,7 +2,7 @@ const db = require('../models');
 const ControlCalidad = db.ControlCalidad;
 
 // Crear una nueva inspección de control de calidad
-exports.crearControlCalidad = async (req, res) => {
+exports.createControlCalidad = async (req, res) => {
   try {
     const control = await ControlCalidad.create(req.body);
     res.status(201).json(control);
@@ -12,7 +12,7 @@ exports.crearControlCalidad = async (req, res) => {
 };
 
 // Obtener todas las inspecciones
-exports.obtenerControlCalidades = async (req, res) => {
+exports.readControlCalidades = async (req, res) => {
   try {
     const controles = await ControlCalidad.findAll();
     res.json(controles);
@@ -22,7 +22,7 @@ exports.obtenerControlCalidades = async (req, res) => {
 };
 
 // Obtener inspección por ID
-exports.obtenerControlCalidadPorId = async (req, res) => {
+exports.readControlCalidad = async (req, res) => {
   try {
     const control = await ControlCalidad.findByPk(req.params.id);
     if (control) {
@@ -36,7 +36,7 @@ exports.obtenerControlCalidadPorId = async (req, res) => {
 };
 
 // Actualizar una inspección
-exports.actualizarControlCalidad = async (req, res) => {
+exports.updateControlCalidad = async (req, res) => {
   try {
     const control = await ControlCalidad.findByPk(req.params.id);
     if (control) {
@@ -51,7 +51,7 @@ exports.actualizarControlCalidad = async (req, res) => {
 };
 
 // Eliminar una inspección
-exports.eliminarControlCalidad = async (req, res) => {
+exports.deleteControlCalidad = async (req, res) => {
   try {
     const control = await ControlCalidad.findByPk(req.params.id);
     if (control) {

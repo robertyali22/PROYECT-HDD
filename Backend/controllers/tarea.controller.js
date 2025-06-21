@@ -2,7 +2,7 @@ const db = require('../models');
 const Tarea = db.Tarea;
 
 // Crear una nueva tarea
-exports.crearTarea = async (req, res) => {
+exports.createTarea = async (req, res) => {
   try {
     const tarea = await Tarea.create(req.body);
     res.status(201).json(tarea);
@@ -12,7 +12,7 @@ exports.crearTarea = async (req, res) => {
 };
 
 // Obtener todas las tareas
-exports.obtenerTareas = async (req, res) => {
+exports.readTareas = async (req, res) => {
   try {
     const tareas = await Tarea.findAll();
     res.json(tareas);
@@ -22,7 +22,7 @@ exports.obtenerTareas = async (req, res) => {
 };
 
 // Obtener tarea por ID
-exports.obtenerTareaPorId = async (req, res) => {
+exports.readTarea = async (req, res) => {
   try {
     const tarea = await Tarea.findByPk(req.params.id);
     if (tarea) {
@@ -36,7 +36,7 @@ exports.obtenerTareaPorId = async (req, res) => {
 };
 
 // Actualizar una tarea
-exports.actualizarTarea = async (req, res) => {
+exports.updateTarea = async (req, res) => {
   try {
     const tarea = await Tarea.findByPk(req.params.id);
     if (tarea) {
@@ -51,7 +51,7 @@ exports.actualizarTarea = async (req, res) => {
 };
 
 // Eliminar una tarea
-exports.eliminarTarea = async (req, res) => {
+exports.deleteTarea = async (req, res) => {
   try {
     const tarea = await Tarea.findByPk(req.params.id);
     if (tarea) {

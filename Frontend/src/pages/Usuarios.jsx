@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { Package, DollarSign, Users, CreditCard, TrendingUp, Search, X, ChevronDown, Filter, Plus, Shield, Activity, Settings, UserCheck, Clock, UserPlus, Download, FileText } from 'lucide-react';
 import { NavBar } from '../components/Navbar';
 import { SideBar } from '../components/Sidebar';
-// import { obtenerUsuarios, crearUsuario, eliminarUsuario, actualizarUsuario } from "../api/UsuarioRequest";
-// import { useForm } from "react-hook-form";
 
 
 // Componente principal de Gestión de Usuarios
-export function GestionUsuarioPage() {
+export function Usuarios() {
     const [activeTab, setActiveTab] = useState('usuarios');
     const [showNewUserModal, setShowNewUserModal] = useState(false);
     const [showEditUserModal, setShowEditUserModal] = useState(false);

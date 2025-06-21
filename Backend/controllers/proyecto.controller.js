@@ -2,7 +2,7 @@ const db = require('../models');
 const Proyecto = db.Proyecto;
 
 // Crear un nuevo proyecto
-exports.crearProyecto = async (req, res) => {
+exports.createProyecto = async (req, res) => {
   try {
     const proyecto = await Proyecto.create(req.body);
     res.status(201).json(proyecto);
@@ -12,7 +12,7 @@ exports.crearProyecto = async (req, res) => {
 };
 
 // Obtener todos los proyectos
-exports.obtenerProyectos = async (req, res) => {
+exports.readProyectos = async (req, res) => {
   try {
     const proyectos = await Proyecto.findAll();
     res.json(proyectos);
@@ -22,7 +22,7 @@ exports.obtenerProyectos = async (req, res) => {
 };
 
 // Obtener proyecto por ID
-exports.obtenerProyectoPorId = async (req, res) => {
+exports.readProyecto = async (req, res) => {
   try {
     const proyecto = await Proyecto.findByPk(req.params.id);
     if (proyecto) {
@@ -36,7 +36,7 @@ exports.obtenerProyectoPorId = async (req, res) => {
 };
 
 // Actualizar un proyecto
-exports.actualizarProyecto = async (req, res) => {
+exports.updateProyecto = async (req, res) => {
   try {
     const proyecto = await Proyecto.findByPk(req.params.id);
     if (proyecto) {
@@ -51,7 +51,7 @@ exports.actualizarProyecto = async (req, res) => {
 };
 
 // Eliminar un proyecto
-exports.eliminarProyecto = async (req, res) => {
+exports.deleteProyecto = async (req, res) => {
   try {
     const proyecto = await Proyecto.findByPk(req.params.id);
     if (proyecto) {

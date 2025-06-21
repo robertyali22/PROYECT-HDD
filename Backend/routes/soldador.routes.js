@@ -3,18 +3,18 @@ const router = express.Router();
 const soldadorController = require('../controllers/soldador.controller');
 
 // Crear nuevo soldador
-router.post('/', soldadorController.crearSoldador);
+router.post('/', soldadorController.createSoldador);
 
 // Obtener todos los soldadores
-router.get('/', soldadorController.obtenerSoldadores);
+router.get('/', soldadorController.readSoldadores);
 
 // Obtener un soldador por ID
-router.get('/:id', soldadorController.obtenerSoldadorPorId);
+router.get('/:id', soldadorController.readSoldador);
 
 // Actualizar un soldador
-router.put('/:id', soldadorController.actualizarSoldador);
+router.put('/:id', soldadorController.updateSoldador);
 
 // Eliminar un soldador
-router.delete('/:id', soldadorController.eliminarSoldador);
+router.delete('/:id', soldadorController.deleteSoldador);
 
 module.exports = router;

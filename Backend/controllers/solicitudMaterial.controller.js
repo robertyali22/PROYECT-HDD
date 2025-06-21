@@ -2,7 +2,7 @@ const db = require('../models');
 const SolicitudMaterial = db.SolicitudMaterial;
 
 // Crear una nueva solicitud de material
-exports.crearSolicitudMaterial = async (req, res) => {
+exports.createSolicitudMaterial = async (req, res) => {
   try {
     const solicitud = await SolicitudMaterial.create(req.body);
     res.status(201).json(solicitud);
@@ -12,7 +12,7 @@ exports.crearSolicitudMaterial = async (req, res) => {
 };
 
 // Obtener todas las solicitudes de material
-exports.obtenerSolicitudesMaterial = async (req, res) => {
+exports.readSolicitudesMaterial = async (req, res) => {
   try {
     const solicitudes = await SolicitudMaterial.findAll();
     res.json(solicitudes);
@@ -22,7 +22,7 @@ exports.obtenerSolicitudesMaterial = async (req, res) => {
 };
 
 // Obtener solicitud de material por ID
-exports.obtenerSolicitudMaterialPorId = async (req, res) => {
+exports.readSolicitudMaterial = async (req, res) => {
   try {
     const solicitud = await SolicitudMaterial.findByPk(req.params.id);
     if (solicitud) {
@@ -36,7 +36,7 @@ exports.obtenerSolicitudMaterialPorId = async (req, res) => {
 };
 
 // Actualizar una solicitud de material
-exports.actualizarSolicitudMaterial = async (req, res) => {
+exports.updateSolicitudMaterial = async (req, res) => {
   try {
     const solicitud = await SolicitudMaterial.findByPk(req.params.id);
     if (solicitud) {
@@ -51,7 +51,7 @@ exports.actualizarSolicitudMaterial = async (req, res) => {
 };
 
 // Eliminar una solicitud de material
-exports.eliminarSolicitudMaterial = async (req, res) => {
+exports.deleteSolicitudMaterial = async (req, res) => {
   try {
     const solicitud = await SolicitudMaterial.findByPk(req.params.id);
     if (solicitud) {

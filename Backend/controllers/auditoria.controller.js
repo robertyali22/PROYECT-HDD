@@ -2,7 +2,7 @@ const db = require('../models');
 const Auditoria = db.Auditoria;
 
 // Crear una nueva auditoría
-exports.crearAuditoria = async (req, res) => {
+exports.createAuditoria = async (req, res) => {
   try {
     const auditoria = await Auditoria.create(req.body);
     res.status(201).json(auditoria);
@@ -12,7 +12,7 @@ exports.crearAuditoria = async (req, res) => {
 };
 
 // Obtener todas las auditorías
-exports.obtenerAuditorias = async (req, res) => {
+exports.readAuditorias = async (req, res) => {
   try {
     const auditorias = await Auditoria.findAll();
     res.json(auditorias);
@@ -22,7 +22,7 @@ exports.obtenerAuditorias = async (req, res) => {
 };
 
 // Obtener una auditoría por ID
-exports.obtenerAuditoriaPorId = async (req, res) => {
+exports.readAuditoria = async (req, res) => {
   try {
     const auditoria = await Auditoria.findByPk(req.params.id);
     if (auditoria) {
@@ -36,7 +36,7 @@ exports.obtenerAuditoriaPorId = async (req, res) => {
 };
 
 // Actualizar una auditoría
-exports.actualizarAuditoria = async (req, res) => {
+exports.updateAuditoria = async (req, res) => {
   try {
     const auditoria = await Auditoria.findByPk(req.params.id);
     if (auditoria) {
@@ -51,7 +51,7 @@ exports.actualizarAuditoria = async (req, res) => {
 };
 
 // Eliminar una auditoría
-exports.eliminarAuditoria = async (req, res) => {
+exports.deleteAuditoria = async (req, res) => {
   try {
     const auditoria = await Auditoria.findByPk(req.params.id);
     if (auditoria) {
