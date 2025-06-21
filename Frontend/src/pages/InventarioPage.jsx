@@ -586,6 +586,25 @@ export function InventarioPage() {
                             </button>
                         </div>
                     </div>
+                )}
+
+                {/* Botones de Acción Globales (Sin cambios) */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                    <button
+                        onClick={handleNewRequest}
+                        className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
+                    >
+                        <PlusIcon /> Nueva Solicitud de Material
+                    </button>
+                    <button className="w-full flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
+                        <DownloadIcon /> Exportar Resumen
+                    </button>
+                    <button className="w-full flex items-center justify-center bg-yellow-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-600 transition">
+                        <SettingsIcon /> Configuración de Resumen
+                    </button>
+                </div>
+            </div>
+
 
                     {/* Modal para añadir producto (Sin cambios en la estructura, solo en handleSaveProduct) */}
                     {showModal && (
