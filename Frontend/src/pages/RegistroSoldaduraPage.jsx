@@ -21,7 +21,7 @@ export function RegistroPage() {
   const [observations, setObservations] = useState('');
   const [signature, setSignature] = useState('');
   const sigPadRef = useRef(null);
-
+ 
   // Records array
   const [records, setRecords] = useState([]);
 
