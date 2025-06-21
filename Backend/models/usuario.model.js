@@ -1,3 +1,5 @@
+// Este modelo define la estructura de la tabla 'usuarios' en la base de datos.
+// Incluye campos como 'nombre', 'apellido', 'email', 'contraseña', 'rol', 'fechaCreacion' y 'estado'.
 module.exports = (sequelize, DataTypes) => {
   const Usuario = sequelize.define('Usuario', {
     id: {

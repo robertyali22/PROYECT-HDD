@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { NavBar} from '../components/Navbar';
+import { NavBar } from '../components/Navbar';
 import { SideBar } from '../components/Sidebar';
 
 // --- Ejemplos Iniciales ---
@@ -208,7 +208,7 @@ export function AuditoriaPage() {
     const [activeTab, setActiveTab] = useState("pendientes");
     const [showInspectionForm, setShowInspectionForm] = useState(false);
     const [selectedInspection, setSelectedInspection] = useState(null);
-    const [pendingInspections, setPendingInspections] = useState( initialPendingInspectionsData
+    const [pendingInspections, setPendingInspections] = useState(initialPendingInspectionsData
     );
     const [auditHistory, setAuditHistory] = useState(initialAuditHistoryData);
 
@@ -228,7 +228,7 @@ export function AuditoriaPage() {
     const [formData, setFormData] = useState({
         observations: "",
         decision: "",
-        inspectionDate: new Date().toISOString().split("T")[0], 
+        inspectionDate: new Date().toISOString().split("T")[0],
     });
     const [checklistState, setChecklistState] = useState({});
 
@@ -321,7 +321,7 @@ export function AuditoriaPage() {
             if (updatedCriteria[group]) {
                 updatedCriteria[group][item] = checklistState[key];
             } else {
-                
+
                 updatedCriteria[group] = { [item]: checklistState[key] };
             }
         });
@@ -487,113 +487,579 @@ export function AuditoriaPage() {
     // --- Renderizado ---
     return (
         <>
-            
-            <div className="sm:ml-64 bg-slate-100 min-h-screen">
-                
-                <div className="mx-w-7xl mx-auto p-5">
-                    <h1 className="section-title text-2xl mb-6 text-gray-800 border-b-2 border-blue-500 pb-2 inline-block">
-                        Control de Calidad y Auditoría
-                    </h1>
+            <NavBar />
+            <SideBar />
 
-                    {/* Pestañas */}
-                    <div className="tabs flMejex mb-6 border-b border-gray-300 overflow-x-auto">
-                        {["pendientes", "historico", "reportes"].map((tab) => (
-                            <div
-                                key={tab}
-                                className={`tab py-3 px-6 cursor-pointer border-b-2 font-medium capitalize whitespace-nowrap ${
-                                    activeTab === tab
+            <div className="sm:ml-64 bg-slate-100">
+
+                <div className="p-4 mt-16">
+                    <div className="bg-white rounded-lg shadow p-6">
+                        {/* Header Section */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                            <div>
+                                <h1 className="text-3xl font-bold text-gray-900 mb-2 border-b-2 border-blue-500 pb-2 inline-block">
+                                    Control de Calidad y Auditoría
+                                </h1>
+                            </div>
+                        </div>
+
+                        {/* Pestañas */}
+                        <div className="tabs flMejex mb-6 border-b border-gray-300 overflow-x-auto">
+                            {["pendientes", "historico", "reportes"].map((tab) => (
+                                <div
+                                    key={tab}
+                                    className={`tab py-3 px-6 cursor-pointer border-b-2 font-medium capitalize whitespace-nowrap ${activeTab === tab
                                         ? "border-blue-600 text-blue-600"
                                         : "border-transparent text-gray-600 hover:text-gray-800"
-                                }`}
-                                onClick={() => setActiveTab(tab)}
-                            >
-                                {tab === "pendientes"
-                                    ? `Inspecciones Pendientes (${pendingInspections.length})`
-                                    : tab.replace("_", " ")}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* --- Contenido Pestaña Pendientes --- */}
-                    {activeTab === "pendientes" && (
-                        <div>
-                            {/* ... (código de filtros y tabla de pendientes sin cambios) ... */}
-                            {pendingInspections.length > 0 && (
-                                <div className="alert alert-warning bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded mb-6">
-                                    <strong>¡Atención!</strong> Hay{" "}
-                                    {pendingInspections.length} registros
-                                    pendientes de inspección.
+                                        }`}
+                                    onClick={() => setActiveTab(tab)}
+                                >
+                                    {tab === "pendientes"
+                                        ? `Inspecciones Pendientes (${pendingInspections.length})`
+                                        : tab.replace("_", " ")}
                                 </div>
-                            )}
+                            ))}
+                        </div>
 
-                            {/* Filtros Pendientes */}
-                            <div className="filter-section bg-gray-50 p-4 rounded-lg mb-6">
-                                <div className="form-row grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="form-group">
-                                        <label
-                                            htmlFor="pending-date"
-                                            className="form-label block mb-1 font-medium text-sm"
-                                        >
-                                            Filtrar por Fecha Registro
-                                        </label>
-                                        <input
-                                            type="date"
-                                            id="pending-date"
-                                            name="date"
-                                            value={pendingFilters.date}
-                                            onChange={(e) =>
-                                                handleFilterChange(e, "pending")
-                                            }
-                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm"
-                                        />
+                        {/* --- Contenido Pestaña Pendientes --- */}
+                        {activeTab === "pendientes" && (
+                            <div>
+                                {/* ... (código de filtros y tabla de pendientes sin cambios) ... */}
+                                {pendingInspections.length > 0 && (
+                                    <div className="alert alert-warning bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded mb-6">
+                                        <strong>¡Atención!</strong> Hay{" "}
+                                        {pendingInspections.length} registros
+                                        pendientes de inspección.
                                     </div>
-                                    <div className="form-group">
-                                        <label
-                                            htmlFor="pending-welder"
-                                            className="form-label block mb-1 font-medium text-sm"
-                                        >
-                                            Soldador
-                                        </label>
-                                        <select
-                                            id="pending-welder"
-                                            name="welder"
-                                            value={pendingFilters.welder}
-                                            onChange={(e) =>
-                                                handleFilterChange(e, "pending")
-                                            }
-                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
-                                        >
-                                            <option value="">Todos</option>
-                                            {/* Opciones únicas de soldadores */}
-                                            {[
-                                                ...new Set(
-                                                    initialPendingInspectionsData.map(
-                                                        (i) => i.welder
+                                )}
+
+                                {/* Filtros Pendientes */}
+                                <div className="filter-section bg-gray-50 p-4 rounded-lg mb-6">
+                                    <div className="form-row grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="form-group">
+                                            <label
+                                                htmlFor="pending-date"
+                                                className="form-label block mb-1 font-medium text-sm"
+                                            >
+                                                Filtrar por Fecha Registro
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="pending-date"
+                                                name="date"
+                                                value={pendingFilters.date}
+                                                onChange={(e) =>
+                                                    handleFilterChange(e, "pending")
+                                                }
+                                                className="form-control w-full p-2 border border-gray-300 rounded text-sm"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label
+                                                htmlFor="pending-welder"
+                                                className="form-label block mb-1 font-medium text-sm"
+                                            >
+                                                Soldador
+                                            </label>
+                                            <select
+                                                id="pending-welder"
+                                                name="welder"
+                                                value={pendingFilters.welder}
+                                                onChange={(e) =>
+                                                    handleFilterChange(e, "pending")
+                                                }
+                                                className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
+                                            >
+                                                <option value="">Todos</option>
+                                                {/* Opciones únicas de soldadores */}
+                                                {[
+                                                    ...new Set(
+                                                        initialPendingInspectionsData.map(
+                                                            (i) => i.welder
+                                                        )
+                                                    ),
+                                                ].map((w) => (
+                                                    <option key={w} value={w}>
+                                                        {w}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        {/* Podrías añadir más filtros si es necesario */}
+                                    </div>
+                                </div>
+
+                                {/* Tabla Pendientes */}
+                                <div className="card bg-white rounded-lg p-4 md:p-6 shadow-sm mb-8">
+                                    <div className="table-responsive overflow-x-auto">
+                                        <table className="w-full border-collapse min-w-[600px]">
+                                            {/* ... thead ... */}
+                                            <thead>
+                                                <tr className="bg-gray-50">
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Código
+                                                    </th>
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Fecha Reg.
+                                                    </th>
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Soldador
+                                                    </th>
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Tipo
+                                                    </th>
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Prioridad
+                                                    </th>
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Estado
+                                                    </th>
+                                                    <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Acciones
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredPendingInspections.length >
+                                                    0 ? (
+                                                    filteredPendingInspections.map(
+                                                        (inspection) => (
+                                                            <tr
+                                                                key={inspection.id}
+                                                                className="hover:bg-gray-50"
+                                                            >
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    {inspection.id}
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    {
+                                                                        inspection.date
+                                                                    }
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    {
+                                                                        inspection.welder
+                                                                    }
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    {
+                                                                        inspection.type
+                                                                    }
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    <span
+                                                                        className={`status ${getStatusClass(
+                                                                            inspection.priority
+                                                                        )} inline-block px-2 py-1 rounded-full text-xs font-medium`}
+                                                                    >
+                                                                        {
+                                                                            inspection.priority
+                                                                        }
+                                                                    </span>
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    <span
+                                                                        className={`status ${getStatusClass(
+                                                                            inspection.status
+                                                                        )} inline-block px-2 py-1 rounded-full text-xs font-medium`}
+                                                                    >
+                                                                        {
+                                                                            inspection.status
+                                                                        }
+                                                                    </span>
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b">
+                                                                    <div className="action-buttons flex gap-2">
+                                                                        <button
+                                                                            className="btn btn-primary bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-blue-700"
+                                                                            onClick={() =>
+                                                                                handleReviewClick(
+                                                                                    inspection.id
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Revisar
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        )
                                                     )
-                                                ),
-                                            ].map((w) => (
-                                                <option key={w} value={w}>
-                                                    {w}
-                                                </option>
-                                            ))}
-                                        </select>
+                                                ) : (
+                                                    <tr>
+                                                        <td
+                                                            colSpan="7"
+                                                            className="p-4 text-center text-gray-500"
+                                                        >
+                                                            No hay inspecciones
+                                                            pendientes que coincidan
+                                                            con los filtros.
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    {/* Podrías añadir más filtros si es necesario */}
                                 </div>
-                            </div>
 
-                            {/* Tabla Pendientes */}
-                            <div className="card bg-white rounded-lg p-4 md:p-6 shadow-sm mb-8">
+                                {/* --- Formulario de Inspección (Modal) --- */}
+                                {showInspectionForm && selectedInspection && (
+                                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-40 overflow-y-auto p-4 pt-10">
+                                        {/* ... (código del formulario modal sin cambios) ... */}
+                                        <div className="card bg-white rounded-lg p-6 shadow-xl mb-8 w-full max-w-3xl relative">
+                                            <button
+                                                onClick={handleCloseForm}
+                                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold"
+                                            >
+                                                &times;
+                                            </button>
+                                            <h2 className="text-xl font-semibold mb-6">
+                                                Inspección de Soldadura:{" "}
+                                                {selectedInspection.id}
+                                            </h2>
+
+                                            {/* Resumen de Datos */}
+                                            <div className="summary-box bg-gray-50 rounded-lg p-4 mb-6 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Soldador:
+                                                    </span>{" "}
+                                                    {selectedInspection.welder}
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Fecha Registro:
+                                                    </span>{" "}
+                                                    {selectedInspection.date}
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Tipo Soldadura:
+                                                    </span>{" "}
+                                                    {selectedInspection.type}
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Material Base:
+                                                    </span>{" "}
+                                                    {selectedInspection.material}
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium">
+                                                        Espesor:
+                                                    </span>{" "}
+                                                    {selectedInspection.thickness}{" "}
+                                                    mm
+                                                </div>
+                                            </div>
+
+                                            {/* Galería de Imágenes */}
+                                            {selectedInspection.images &&
+                                                selectedInspection.images.length >
+                                                0 && (
+                                                    <div className="mb-6">
+                                                        <h3 className="text-md font-semibold mb-2">
+                                                            Imágenes Adjuntas
+                                                        </h3>
+                                                        <div className="image-gallery flex flex-wrap gap-3 my-4">
+                                                            {selectedInspection.images.map(
+                                                                (imgSrc, index) => (
+                                                                    <div
+                                                                        key={index}
+                                                                        className="gallery-item w-24 h-24 rounded overflow-hidden relative cursor-pointer bg-gray-200"
+                                                                    >
+                                                                        <img
+                                                                            src={
+                                                                                imgSrc
+                                                                            }
+                                                                            alt={`Imagen ${index +
+                                                                                1
+                                                                                }`}
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                            {/* Formulario de Auditoría */}
+                                            <form onSubmit={handleFormSubmit}>
+                                                <div className="audit-criteria mb-8">
+                                                    <h3 className="text-md font-semibold mb-3 text-gray-800 border-b pb-1">
+                                                        Criterios de Inspección
+                                                    </h3>
+                                                    {/* Mapeo dinámico de criterios */}
+                                                    {selectedInspection.criteria &&
+                                                        Object.entries(
+                                                            selectedInspection.criteria
+                                                        ).map(
+                                                            ([
+                                                                groupKey,
+                                                                groupItems,
+                                                            ]) => (
+                                                                <div
+                                                                    key={groupKey}
+                                                                    className="criteria-group mb-4"
+                                                                >
+                                                                    <div className="criteria-title font-medium mb-2 capitalize text-gray-700">
+                                                                        {groupKey.replace(
+                                                                            /([A-Z])/g,
+                                                                            " $1"
+                                                                        )}
+                                                                    </div>
+                                                                    {Object.entries(
+                                                                        groupItems
+                                                                    ).map(
+                                                                        ([
+                                                                            itemKey,
+                                                                            initialValue,
+                                                                        ]) => (
+                                                                            <div
+                                                                                key={`${groupKey}-${itemKey}`}
+                                                                                className="checklist-item flex items-center mb-2 pl-2"
+                                                                            >
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    id={`${groupKey}-${itemKey}`}
+                                                                                    name={`${groupKey}-${itemKey}`}
+                                                                                    checked={
+                                                                                        checklistState[
+                                                                                        `${groupKey}-${itemKey}`
+                                                                                        ] ||
+                                                                                        false
+                                                                                    }
+                                                                                    onChange={
+                                                                                        handleChecklistChange
+                                                                                    }
+                                                                                    className="mr-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                                                                />
+                                                                                <label
+                                                                                    htmlFor={`${groupKey}-${itemKey}`}
+                                                                                    className="text-sm capitalize"
+                                                                                >
+                                                                                    {itemKey.replace(
+                                                                                        /([A-Z])/g,
+                                                                                        " $1"
+                                                                                    )}
+                                                                                </label>
+                                                                            </div>
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                            )
+                                                        )}
+                                                </div>
+
+                                                {/* Observaciones y Decisión */}
+                                                <div className="form-group mb-6">
+                                                    <label
+                                                        htmlFor="observations"
+                                                        className="form-label block mb-1 font-medium text-sm"
+                                                    >
+                                                        Observaciones
+                                                    </label>
+                                                    <textarea
+                                                        id="observations"
+                                                        name="observations"
+                                                        value={
+                                                            formData.observations
+                                                        }
+                                                        onChange={
+                                                            handleFormInputChange
+                                                        }
+                                                        className="form-control w-full p-2 border border-gray-300 rounded text-sm"
+                                                        rows="3"
+                                                        placeholder="Ingrese sus observaciones..."
+                                                    ></textarea>
+                                                </div>
+
+                                                <div className="form-row grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            htmlFor="decision"
+                                                            className="form-label block mb-1 font-medium text-sm"
+                                                        >
+                                                            Decisión Final{" "}
+                                                            <span className="text-red-500">
+                                                                *
+                                                            </span>
+                                                        </label>
+                                                        <select
+                                                            id="decision"
+                                                            name="decision"
+                                                            value={
+                                                                formData.decision
+                                                            }
+                                                            onChange={
+                                                                handleFormInputChange
+                                                            }
+                                                            required
+                                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
+                                                        >
+                                                            <option
+                                                                value=""
+                                                                disabled
+                                                            >
+                                                                Seleccionar...
+                                                            </option>
+                                                            <option value="Aprobado">
+                                                                Aprobado
+                                                            </option>
+                                                            <option value="Rechazado">
+                                                                Rechazado
+                                                            </option>
+                                                            <option value="Requiere Reproceso">
+                                                                Requiere Reproceso
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label
+                                                            htmlFor="inspectionDate"
+                                                            className="form-label block mb-1 font-medium text-sm"
+                                                        >
+                                                            Fecha de Inspección
+                                                        </label>
+                                                        <input
+                                                            type="date"
+                                                            id="inspectionDate"
+                                                            name="inspectionDate"
+                                                            value={
+                                                                formData.inspectionDate
+                                                            }
+                                                            onChange={
+                                                                handleFormInputChange
+                                                            }
+                                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Botones */}
+                                                <div className="text-right mt-6">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-secondary bg-gray-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-600 mr-2"
+                                                        onClick={handleCloseForm}
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                    <button
+                                                        type="submit"
+                                                        className="btn btn-success bg-green-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-green-700"
+                                                    >
+                                                        Guardar Inspección
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* --- Contenido Pestaña Histórico --- */}
+                        {activeTab === "historico" && (
+                            <div className="card bg-white rounded-lg p-4 md:p-6 shadow-sm">
+                                {/* ... (código de filtros y tabla de histórico sin cambios) ... */}
+                                <h2 className="text-lg font-semibold mb-4">
+                                    Histórico de Auditorías
+                                </h2>
+
+                                {/* Filtros Histórico */}
+                                <div className="filter-section bg-gray-50 p-4 rounded-lg mb-6">
+                                    <div className="form-row grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="form-group">
+                                            <label
+                                                htmlFor="history-date"
+                                                className="form-label block mb-1 font-medium text-sm"
+                                            >
+                                                Filtrar por Fecha Inspección
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="history-date"
+                                                name="date"
+                                                value={historyFilters.date}
+                                                onChange={(e) =>
+                                                    handleFilterChange(e, "history")
+                                                }
+                                                className="form-control w-full p-2 border border-gray-300 rounded text-sm"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label
+                                                htmlFor="history-welder"
+                                                className="form-label block mb-1 font-medium text-sm"
+                                            >
+                                                Soldador
+                                            </label>
+                                            <select
+                                                id="history-welder"
+                                                name="welder"
+                                                value={historyFilters.welder}
+                                                onChange={(e) =>
+                                                    handleFilterChange(e, "history")
+                                                }
+                                                className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
+                                            >
+                                                <option value="">Todos</option>
+                                                {[
+                                                    ...new Set(
+                                                        initialAuditHistoryData.map(
+                                                            (i) => i.welder
+                                                        )
+                                                    ),
+                                                ].map((w) => (
+                                                    <option key={w} value={w}>
+                                                        {w}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label
+                                                htmlFor="history-status"
+                                                className="form-label block mb-1 font-medium text-sm"
+                                            >
+                                                Estado Final
+                                            </label>
+                                            <select
+                                                id="history-status"
+                                                name="status"
+                                                value={historyFilters.status}
+                                                onChange={(e) =>
+                                                    handleFilterChange(e, "history")
+                                                }
+                                                className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
+                                            >
+                                                <option value="">Todos</option>
+                                                <option value="Aprobado">
+                                                    Aprobado
+                                                </option>
+                                                <option value="Rechazado">
+                                                    Rechazado
+                                                </option>
+                                                <option value="Requiere Reproceso">
+                                                    Requiere Reproceso
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Tabla Histórico */}
                                 <div className="table-responsive overflow-x-auto">
-                                    <table className="w-full border-collapse min-w-[600px]">
-                                        {/* ... thead ... */}
+                                    <table className="w-full border-collapse min-w-[700px]">
                                         <thead>
                                             <tr className="bg-gray-50">
                                                 <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
                                                     Código
                                                 </th>
                                                 <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Fecha Reg.
+                                                    Fecha Insp.
                                                 </th>
                                                 <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
                                                     Soldador
@@ -602,20 +1068,17 @@ export function AuditoriaPage() {
                                                     Tipo
                                                 </th>
                                                 <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Prioridad
+                                                    Decisión
                                                 </th>
                                                 <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Estado
+                                                    Observaciones
                                                 </th>
-                                                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Acciones
-                                                </th>
+                                                {/* Podrías añadir un botón para ver detalles si es necesario */}
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {filteredPendingInspections.length >
-                                            0 ? (
-                                                filteredPendingInspections.map(
+                                            {filteredAuditHistory.length > 0 ? (
+                                                filteredAuditHistory.map(
                                                     (inspection) => (
                                                         <tr
                                                             key={inspection.id}
@@ -626,54 +1089,34 @@ export function AuditoriaPage() {
                                                             </td>
                                                             <td className="p-3 text-sm text-gray-700 border-b">
                                                                 {
-                                                                    inspection.date
+                                                                    inspection.inspectionDate
                                                                 }
                                                             </td>
                                                             <td className="p-3 text-sm text-gray-700 border-b">
-                                                                {
-                                                                    inspection.welder
-                                                                }
+                                                                {inspection.welder}
                                                             </td>
                                                             <td className="p-3 text-sm text-gray-700 border-b">
-                                                                {
-                                                                    inspection.type
-                                                                }
+                                                                {inspection.type}
                                                             </td>
                                                             <td className="p-3 text-sm text-gray-700 border-b">
                                                                 <span
                                                                     className={`status ${getStatusClass(
-                                                                        inspection.priority
+                                                                        inspection.decision
                                                                     )} inline-block px-2 py-1 rounded-full text-xs font-medium`}
                                                                 >
                                                                     {
-                                                                        inspection.priority
+                                                                        inspection.decision
                                                                     }
                                                                 </span>
                                                             </td>
-                                                            <td className="p-3 text-sm text-gray-700 border-b">
-                                                                <span
-                                                                    className={`status ${getStatusClass(
-                                                                        inspection.status
-                                                                    )} inline-block px-2 py-1 rounded-full text-xs font-medium`}
-                                                                >
-                                                                    {
-                                                                        inspection.status
-                                                                    }
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-3 text-sm text-gray-700 border-b">
-                                                                <div className="action-buttons flex gap-2">
-                                                                    <button
-                                                                        className="btn btn-primary bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-blue-700"
-                                                                        onClick={() =>
-                                                                            handleReviewClick(
-                                                                                inspection.id
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        Revisar
-                                                                    </button>
-                                                                </div>
+                                                            <td
+                                                                className="p-3 text-sm text-gray-700 border-b max-w-xs truncate"
+                                                                title={
+                                                                    inspection.observations
+                                                                }
+                                                            >
+                                                                {inspection.observations ||
+                                                                    "-"}
                                                             </td>
                                                         </tr>
                                                     )
@@ -681,12 +1124,12 @@ export function AuditoriaPage() {
                                             ) : (
                                                 <tr>
                                                     <td
-                                                        colSpan="7"
+                                                        colSpan="6"
                                                         className="p-4 text-center text-gray-500"
                                                     >
-                                                        No hay inspecciones
-                                                        pendientes que coincidan
-                                                        con los filtros.
+                                                        No hay registros históricos
+                                                        que coincidan con los
+                                                        filtros.
                                                     </td>
                                                 </tr>
                                             )}
@@ -694,609 +1137,118 @@ export function AuditoriaPage() {
                                     </table>
                                 </div>
                             </div>
+                        )}
 
-                            {/* --- Formulario de Inspección (Modal) --- */}
-                            {showInspectionForm && selectedInspection && (
-                                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-40 overflow-y-auto p-4 pt-10">
-                                    {/* ... (código del formulario modal sin cambios) ... */}
-                                    <div className="card bg-white rounded-lg p-6 shadow-xl mb-8 w-full max-w-3xl relative">
-                                        <button
-                                            onClick={handleCloseForm}
-                                            className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold"
-                                        >
-                                            &times;
-                                        </button>
-                                        <h2 className="text-xl font-semibold mb-6">
-                                            Inspección de Soldadura:{" "}
-                                            {selectedInspection.id}
-                                        </h2>
-
-                                        {/* Resumen de Datos */}
-                                        <div className="summary-box bg-gray-50 rounded-lg p-4 mb-6 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                            <div>
-                                                <span className="font-medium">
-                                                    Soldador:
-                                                </span>{" "}
-                                                {selectedInspection.welder}
-                                            </div>
-                                            <div>
-                                                <span className="font-medium">
-                                                    Fecha Registro:
-                                                </span>{" "}
-                                                {selectedInspection.date}
-                                            </div>
-                                            <div>
-                                                <span className="font-medium">
-                                                    Tipo Soldadura:
-                                                </span>{" "}
-                                                {selectedInspection.type}
-                                            </div>
-                                            <div>
-                                                <span className="font-medium">
-                                                    Material Base:
-                                                </span>{" "}
-                                                {selectedInspection.material}
-                                            </div>
-                                            <div>
-                                                <span className="font-medium">
-                                                    Espesor:
-                                                </span>{" "}
-                                                {selectedInspection.thickness}{" "}
-                                                mm
-                                            </div>
+                        {/* --- Contenido Pestaña Reportes (Mejorado) --- */}
+                        {activeTab === "reportes" && (
+                            <div className="space-y-8">
+                                {/* Sección Resumen General */}
+                                <div className="card bg-white rounded-lg p-6 shadow-sm">
+                                    <h2 className="text-xl font-semibold mb-6 text-gray-800">
+                                        Resumen General de Auditorías
+                                    </h2>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                                        <div className="report-stat p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
+                                            <p className="text-sm font-medium text-blue-800">
+                                                Total Realizadas
+                                            </p>
+                                            <p className="text-3xl font-bold text-blue-600 mt-1">
+                                                {reportData.total}
+                                            </p>
                                         </div>
-
-                                        {/* Galería de Imágenes */}
-                                        {selectedInspection.images &&
-                                            selectedInspection.images.length >
-                                                0 && (
-                                                <div className="mb-6">
-                                                    <h3 className="text-md font-semibold mb-2">
-                                                        Imágenes Adjuntas
-                                                    </h3>
-                                                    <div className="image-gallery flex flex-wrap gap-3 my-4">
-                                                        {selectedInspection.images.map(
-                                                            (imgSrc, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="gallery-item w-24 h-24 rounded overflow-hidden relative cursor-pointer bg-gray-200"
-                                                                >
-                                                                    <img
-                                                                        src={
-                                                                            imgSrc
-                                                                        }
-                                                                        alt={`Imagen ${
-                                                                            index +
-                                                                            1
-                                                                        }`}
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                </div>
-                                                            )
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                        {/* Formulario de Auditoría */}
-                                        <form onSubmit={handleFormSubmit}>
-                                            <div className="audit-criteria mb-8">
-                                                <h3 className="text-md font-semibold mb-3 text-gray-800 border-b pb-1">
-                                                    Criterios de Inspección
-                                                </h3>
-                                                {/* Mapeo dinámico de criterios */}
-                                                {selectedInspection.criteria &&
-                                                    Object.entries(
-                                                        selectedInspection.criteria
-                                                    ).map(
-                                                        ([
-                                                            groupKey,
-                                                            groupItems,
-                                                        ]) => (
-                                                            <div
-                                                                key={groupKey}
-                                                                className="criteria-group mb-4"
-                                                            >
-                                                                <div className="criteria-title font-medium mb-2 capitalize text-gray-700">
-                                                                    {groupKey.replace(
-                                                                        /([A-Z])/g,
-                                                                        " $1"
-                                                                    )}
-                                                                </div>
-                                                                {Object.entries(
-                                                                    groupItems
-                                                                ).map(
-                                                                    ([
-                                                                        itemKey,
-                                                                        initialValue,
-                                                                    ]) => (
-                                                                        <div
-                                                                            key={`${groupKey}-${itemKey}`}
-                                                                            className="checklist-item flex items-center mb-2 pl-2"
-                                                                        >
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                id={`${groupKey}-${itemKey}`}
-                                                                                name={`${groupKey}-${itemKey}`}
-                                                                                checked={
-                                                                                    checklistState[
-                                                                                        `${groupKey}-${itemKey}`
-                                                                                    ] ||
-                                                                                    false
-                                                                                }
-                                                                                onChange={
-                                                                                    handleChecklistChange
-                                                                                }
-                                                                                className="mr-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                                                                            />
-                                                                            <label
-                                                                                htmlFor={`${groupKey}-${itemKey}`}
-                                                                                className="text-sm capitalize"
-                                                                            >
-                                                                                {itemKey.replace(
-                                                                                    /([A-Z])/g,
-                                                                                    " $1"
-                                                                                )}
-                                                                            </label>
-                                                                        </div>
-                                                                    )
-                                                                )}
-                                                            </div>
-                                                        )
-                                                    )}
-                                            </div>
-
-                                            {/* Observaciones y Decisión */}
-                                            <div className="form-group mb-6">
-                                                <label
-                                                    htmlFor="observations"
-                                                    className="form-label block mb-1 font-medium text-sm"
-                                                >
-                                                    Observaciones
-                                                </label>
-                                                <textarea
-                                                    id="observations"
-                                                    name="observations"
-                                                    value={
-                                                        formData.observations
-                                                    }
-                                                    onChange={
-                                                        handleFormInputChange
-                                                    }
-                                                    className="form-control w-full p-2 border border-gray-300 rounded text-sm"
-                                                    rows="3"
-                                                    placeholder="Ingrese sus observaciones..."
-                                                ></textarea>
-                                            </div>
-
-                                            <div className="form-row grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                                <div className="form-group">
-                                                    <label
-                                                        htmlFor="decision"
-                                                        className="form-label block mb-1 font-medium text-sm"
-                                                    >
-                                                        Decisión Final{" "}
-                                                        <span className="text-red-500">
-                                                            *
-                                                        </span>
-                                                    </label>
-                                                    <select
-                                                        id="decision"
-                                                        name="decision"
-                                                        value={
-                                                            formData.decision
-                                                        }
-                                                        onChange={
-                                                            handleFormInputChange
-                                                        }
-                                                        required
-                                                        className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
-                                                    >
-                                                        <option
-                                                            value=""
-                                                            disabled
-                                                        >
-                                                            Seleccionar...
-                                                        </option>
-                                                        <option value="Aprobado">
-                                                            Aprobado
-                                                        </option>
-                                                        <option value="Rechazado">
-                                                            Rechazado
-                                                        </option>
-                                                        <option value="Requiere Reproceso">
-                                                            Requiere Reproceso
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label
-                                                        htmlFor="inspectionDate"
-                                                        className="form-label block mb-1 font-medium text-sm"
-                                                    >
-                                                        Fecha de Inspección
-                                                    </label>
-                                                    <input
-                                                        type="date"
-                                                        id="inspectionDate"
-                                                        name="inspectionDate"
-                                                        value={
-                                                            formData.inspectionDate
-                                                        }
-                                                        onChange={
-                                                            handleFormInputChange
-                                                        }
-                                                        className="form-control w-full p-2 border border-gray-300 rounded text-sm"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Botones */}
-                                            <div className="text-right mt-6">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-secondary bg-gray-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-600 mr-2"
-                                                    onClick={handleCloseForm}
-                                                >
-                                                    Cancelar
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="btn btn-success bg-green-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-green-700"
-                                                >
-                                                    Guardar Inspección
-                                                </button>
-                                            </div>
-                                        </form>
+                                        <div className="report-stat p-4 bg-green-50 rounded-lg border border-green-200 text-center">
+                                            <p className="text-sm font-medium text-green-800">
+                                                Aprobadas
+                                            </p>
+                                            <p className="text-3xl font-bold text-green-600 mt-1">
+                                                {reportData.approved}
+                                            </p>
+                                        </div>
+                                        <div className="report-stat p-4 bg-red-50 rounded-lg border border-red-200 text-center">
+                                            <p className="text-sm font-medium text-red-800">
+                                                Rechazadas
+                                            </p>
+                                            <p className="text-3xl font-bold text-red-600 mt-1">
+                                                {reportData.rejected}
+                                            </p>
+                                        </div>
+                                        <div className="report-stat p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-center">
+                                            <p className="text-sm font-medium text-yellow-800">
+                                                Reproceso
+                                            </p>
+                                            <p className="text-3xl font-bold text-yellow-600 mt-1">
+                                                {reportData.rework}
+                                            </p>
+                                        </div>
+                                        <div className="report-stat p-4 bg-indigo-50 rounded-lg border border-indigo-200 text-center">
+                                            <p className="text-sm font-medium text-indigo-800">
+                                                Tasa Aprobación
+                                            </p>
+                                            <p className="text-3xl font-bold text-indigo-600 mt-1">
+                                                {reportData.approvalRate}%
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    )}
 
-                    {/* --- Contenido Pestaña Histórico --- */}
-                    {activeTab === "historico" && (
-                        <div className="card bg-white rounded-lg p-4 md:p-6 shadow-sm">
-                            {/* ... (código de filtros y tabla de histórico sin cambios) ... */}
-                            <h2 className="text-lg font-semibold mb-4">
-                                Histórico de Auditorías
-                            </h2>
-
-                            {/* Filtros Histórico */}
-                            <div className="filter-section bg-gray-50 p-4 rounded-lg mb-6">
-                                <div className="form-row grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="form-group">
-                                        <label
-                                            htmlFor="history-date"
-                                            className="form-label block mb-1 font-medium text-sm"
-                                        >
-                                            Filtrar por Fecha Inspección
-                                        </label>
-                                        <input
-                                            type="date"
-                                            id="history-date"
-                                            name="date"
-                                            value={historyFilters.date}
-                                            onChange={(e) =>
-                                                handleFilterChange(e, "history")
-                                            }
-                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm"
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label
-                                            htmlFor="history-welder"
-                                            className="form-label block mb-1 font-medium text-sm"
-                                        >
-                                            Soldador
-                                        </label>
-                                        <select
-                                            id="history-welder"
-                                            name="welder"
-                                            value={historyFilters.welder}
-                                            onChange={(e) =>
-                                                handleFilterChange(e, "history")
-                                            }
-                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
-                                        >
-                                            <option value="">Todos</option>
-                                            {[
-                                                ...new Set(
-                                                    initialAuditHistoryData.map(
-                                                        (i) => i.welder
-                                                    )
-                                                ),
-                                            ].map((w) => (
-                                                <option key={w} value={w}>
-                                                    {w}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <label
-                                            htmlFor="history-status"
-                                            className="form-label block mb-1 font-medium text-sm"
-                                        >
-                                            Estado Final
-                                        </label>
-                                        <select
-                                            id="history-status"
-                                            name="status"
-                                            value={historyFilters.status}
-                                            onChange={(e) =>
-                                                handleFilterChange(e, "history")
-                                            }
-                                            className="form-control w-full p-2 border border-gray-300 rounded text-sm bg-white"
-                                        >
-                                            <option value="">Todos</option>
-                                            <option value="Aprobado">
-                                                Aprobado
-                                            </option>
-                                            <option value="Rechazado">
-                                                Rechazado
-                                            </option>
-                                            <option value="Requiere Reproceso">
-                                                Requiere Reproceso
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Tabla Histórico */}
-                            <div className="table-responsive overflow-x-auto">
-                                <table className="w-full border-collapse min-w-[700px]">
-                                    <thead>
-                                        <tr className="bg-gray-50">
-                                            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                Código
-                                            </th>
-                                            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                Fecha Insp.
-                                            </th>
-                                            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                Soldador
-                                            </th>
-                                            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                Tipo
-                                            </th>
-                                            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                Decisión
-                                            </th>
-                                            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                Observaciones
-                                            </th>
-                                            {/* Podrías añadir un botón para ver detalles si es necesario */}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredAuditHistory.length > 0 ? (
-                                            filteredAuditHistory.map(
-                                                (inspection) => (
-                                                    <tr
-                                                        key={inspection.id}
-                                                        className="hover:bg-gray-50"
-                                                    >
-                                                        <td className="p-3 text-sm text-gray-700 border-b">
-                                                            {inspection.id}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-700 border-b">
-                                                            {
-                                                                inspection.inspectionDate
-                                                            }
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-700 border-b">
-                                                            {inspection.welder}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-700 border-b">
-                                                            {inspection.type}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-700 border-b">
-                                                            <span
-                                                                className={`status ${getStatusClass(
-                                                                    inspection.decision
-                                                                )} inline-block px-2 py-1 rounded-full text-xs font-medium`}
-                                                            >
-                                                                {
-                                                                    inspection.decision
-                                                                }
-                                                            </span>
-                                                        </td>
-                                                        <td
-                                                            className="p-3 text-sm text-gray-700 border-b max-w-xs truncate"
-                                                            title={
-                                                                inspection.observations
-                                                            }
-                                                        >
-                                                            {inspection.observations ||
-                                                                "-"}
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            )
-                                        ) : (
-                                            <tr>
-                                                <td
-                                                    colSpan="6"
-                                                    className="p-4 text-center text-gray-500"
-                                                >
-                                                    No hay registros históricos
-                                                    que coincidan con los
-                                                    filtros.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* --- Contenido Pestaña Reportes (Mejorado) --- */}
-                    {activeTab === "reportes" && (
-                        <div className="space-y-8">
-                            {/* Sección Resumen General */}
-                            <div className="card bg-white rounded-lg p-6 shadow-sm">
-                                <h2 className="text-xl font-semibold mb-6 text-gray-800">
-                                    Resumen General de Auditorías
-                                </h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                                    <div className="report-stat p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
-                                        <p className="text-sm font-medium text-blue-800">
-                                            Total Realizadas
-                                        </p>
-                                        <p className="text-3xl font-bold text-blue-600 mt-1">
-                                            {reportData.total}
-                                        </p>
-                                    </div>
-                                    <div className="report-stat p-4 bg-green-50 rounded-lg border border-green-200 text-center">
-                                        <p className="text-sm font-medium text-green-800">
-                                            Aprobadas
-                                        </p>
-                                        <p className="text-3xl font-bold text-green-600 mt-1">
-                                            {reportData.approved}
-                                        </p>
-                                    </div>
-                                    <div className="report-stat p-4 bg-red-50 rounded-lg border border-red-200 text-center">
-                                        <p className="text-sm font-medium text-red-800">
-                                            Rechazadas
-                                        </p>
-                                        <p className="text-3xl font-bold text-red-600 mt-1">
-                                            {reportData.rejected}
-                                        </p>
-                                    </div>
-                                    <div className="report-stat p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-center">
-                                        <p className="text-sm font-medium text-yellow-800">
-                                            Reproceso
-                                        </p>
-                                        <p className="text-3xl font-bold text-yellow-600 mt-1">
-                                            {reportData.rework}
-                                        </p>
-                                    </div>
-                                    <div className="report-stat p-4 bg-indigo-50 rounded-lg border border-indigo-200 text-center">
-                                        <p className="text-sm font-medium text-indigo-800">
-                                            Tasa Aprobación
-                                        </p>
-                                        <p className="text-3xl font-bold text-indigo-600 mt-1">
-                                            {reportData.approvalRate}%
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Sección Rendimiento por Soldador */}
-                            <div className="card bg-white rounded-lg p-6 shadow-sm">
-                                <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                                    Rendimiento por Soldador
-                                </h2>
-                                <div className="table-responsive overflow-x-auto">
-                                    <table className="w-full border-collapse min-w-[500px]">
-                                        <thead>
-                                            <tr className="bg-gray-50">
-                                                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Soldador
-                                                </th>
-                                                <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Total Insp.
-                                                </th>
-                                                <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Aprobadas
-                                                </th>
-                                                <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Rechazadas
-                                                </th>
-                                                <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Reproceso
-                                                </th>
-                                                <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                    Tasa Aprob. (%)
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {reportData.statsByWelder.map(
-                                                (stat) => (
-                                                    <tr
-                                                        key={stat.welder}
-                                                        className="hover:bg-gray-50"
-                                                    >
-                                                        <td className="p-3 text-sm text-gray-700 border-b font-medium">
-                                                            {stat.welder}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-700 border-b text-center">
-                                                            {stat.total}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-green-700 border-b text-center">
-                                                            {stat.approved}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-red-700 border-b text-center">
-                                                            {stat.rejected}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-yellow-700 border-b text-center">
-                                                            {stat.rework}
-                                                        </td>
-                                                        <td className="p-3 text-sm text-gray-700 border-b text-center font-medium">
-                                                            {stat.total > 0
-                                                                ? (
-                                                                      (stat.approved /
-                                                                          stat.total) *
-                                                                      100
-                                                                  ).toFixed(1)
-                                                                : "0.0"}
-                                                            %
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            {/* Sección Resultados por Tipo de Soldadura y Fallos Comunes */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* Sección Rendimiento por Soldador */}
                                 <div className="card bg-white rounded-lg p-6 shadow-sm">
                                     <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                                        Resultados por Tipo de Soldadura
+                                        Rendimiento por Soldador
                                     </h2>
                                     <div className="table-responsive overflow-x-auto">
-                                        <table className="w-full border-collapse min-w-[400px]">
+                                        <table className="w-full border-collapse min-w-[500px]">
                                             <thead>
                                                 <tr className="bg-gray-50">
                                                     <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
-                                                        Tipo
+                                                        Soldador
                                                     </th>
                                                     <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                        Total
+                                                        Total Insp.
                                                     </th>
                                                     <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
-                                                        Aprob. (%)
+                                                        Aprobadas
+                                                    </th>
+                                                    <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Rechazadas
+                                                    </th>
+                                                    <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Reproceso
+                                                    </th>
+                                                    <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
+                                                        Tasa Aprob. (%)
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {reportData.statsByType.map(
+                                                {reportData.statsByWelder.map(
                                                     (stat) => (
                                                         <tr
-                                                            key={stat.type}
+                                                            key={stat.welder}
                                                             className="hover:bg-gray-50"
                                                         >
                                                             <td className="p-3 text-sm text-gray-700 border-b font-medium">
-                                                                {stat.type}
+                                                                {stat.welder}
                                                             </td>
                                                             <td className="p-3 text-sm text-gray-700 border-b text-center">
                                                                 {stat.total}
                                                             </td>
+                                                            <td className="p-3 text-sm text-green-700 border-b text-center">
+                                                                {stat.approved}
+                                                            </td>
+                                                            <td className="p-3 text-sm text-red-700 border-b text-center">
+                                                                {stat.rejected}
+                                                            </td>
+                                                            <td className="p-3 text-sm text-yellow-700 border-b text-center">
+                                                                {stat.rework}
+                                                            </td>
                                                             <td className="p-3 text-sm text-gray-700 border-b text-center font-medium">
                                                                 {stat.total > 0
                                                                     ? (
-                                                                          (stat.approved /
-                                                                              stat.total) *
-                                                                          100
-                                                                      ).toFixed(
-                                                                          1
-                                                                      )
+                                                                        (stat.approved /
+                                                                            stat.total) *
+                                                                        100
+                                                                    ).toFixed(1)
                                                                     : "0.0"}
                                                                 %
                                                             </td>
@@ -1308,63 +1260,118 @@ export function AuditoriaPage() {
                                     </div>
                                 </div>
 
+                                {/* Sección Resultados por Tipo de Soldadura y Fallos Comunes */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <div className="card bg-white rounded-lg p-6 shadow-sm">
+                                        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                                            Resultados por Tipo de Soldadura
+                                        </h2>
+                                        <div className="table-responsive overflow-x-auto">
+                                            <table className="w-full border-collapse min-w-[400px]">
+                                                <thead>
+                                                    <tr className="bg-gray-50">
+                                                        <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase border-b">
+                                                            Tipo
+                                                        </th>
+                                                        <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
+                                                            Total
+                                                        </th>
+                                                        <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase border-b">
+                                                            Aprob. (%)
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {reportData.statsByType.map(
+                                                        (stat) => (
+                                                            <tr
+                                                                key={stat.type}
+                                                                className="hover:bg-gray-50"
+                                                            >
+                                                                <td className="p-3 text-sm text-gray-700 border-b font-medium">
+                                                                    {stat.type}
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b text-center">
+                                                                    {stat.total}
+                                                                </td>
+                                                                <td className="p-3 text-sm text-gray-700 border-b text-center font-medium">
+                                                                    {stat.total > 0
+                                                                        ? (
+                                                                            (stat.approved /
+                                                                                stat.total) *
+                                                                            100
+                                                                        ).toFixed(
+                                                                            1
+                                                                        )
+                                                                        : "0.0"}
+                                                                    %
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div className="card bg-white rounded-lg p-6 shadow-sm">
+                                        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                                            Criterios Comunes de Rechazo
+                                        </h2>
+                                        {reportData.commonFailures.length > 0 ? (
+                                            <ul className="space-y-2">
+                                                {reportData.commonFailures.map(
+                                                    (failure, index) => (
+                                                        <li
+                                                            key={index}
+                                                            className="flex justify-between items-center text-sm border-b pb-1 last:border-0"
+                                                        >
+                                                            <span className="text-gray-700 capitalize">
+                                                                {failure.criterion}
+                                                            </span>
+                                                            <span className="font-semibold text-red-600 bg-red-100 px-2 py-0.5 rounded">
+                                                                {failure.count}{" "}
+                                                                {failure.count > 1
+                                                                    ? "veces"
+                                                                    : "vez"}
+                                                            </span>
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-sm text-gray-500">
+                                                No se han registrado criterios de
+                                                fallo específicos en las
+                                                inspecciones rechazadas.
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Sección Generar Reporte */}
                                 <div className="card bg-white rounded-lg p-6 shadow-sm">
-                                    <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                                        Criterios Comunes de Rechazo
+                                    <h2 className="text-xl font-semibold mb-4">
+                                        Generar Reporte Detallado
                                     </h2>
-                                    {reportData.commonFailures.length > 0 ? (
-                                        <ul className="space-y-2">
-                                            {reportData.commonFailures.map(
-                                                (failure, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="flex justify-between items-center text-sm border-b pb-1 last:border-0"
-                                                    >
-                                                        <span className="text-gray-700 capitalize">
-                                                            {failure.criterion}
-                                                        </span>
-                                                        <span className="font-semibold text-red-600 bg-red-100 px-2 py-0.5 rounded">
-                                                            {failure.count}{" "}
-                                                            {failure.count > 1
-                                                                ? "veces"
-                                                                : "vez"}
-                                                        </span>
-                                                    </li>
-                                                )
-                                            )}
-                                        </ul>
-                                    ) : (
-                                        <p className="text-sm text-gray-500">
-                                            No se han registrado criterios de
-                                            fallo específicos en las
-                                            inspecciones rechazadas.
-                                        </p>
-                                    )}
+                                    <button
+                                        className="btn btn-primary bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                                        disabled
+                                    >
+                                        Descargar PDF (Próximamente)
+                                    </button>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        Esta función estará disponible en futuras
+                                        actualizaciones.
+                                    </p>
                                 </div>
                             </div>
-
-                            {/* Sección Generar Reporte */}
-                            <div className="card bg-white rounded-lg p-6 shadow-sm">
-                                <h2 className="text-xl font-semibold mb-4">
-                                    Generar Reporte Detallado
-                                </h2>
-                                <button
-                                    className="btn btn-primary bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-                                    disabled
-                                >
-                                    Descargar PDF (Próximamente)
-                                </button>
-                                <p className="text-xs text-gray-500 mt-2">
-                                    Esta función estará disponible en futuras
-                                    actualizaciones.
-                                </p>
-                            </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
 
-           
+
         </>
     );
 }

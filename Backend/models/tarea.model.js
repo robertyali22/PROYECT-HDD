@@ -1,13 +1,33 @@
 module.exports = (sequelize, DataTypes) => {
   const Tarea = sequelize.define("Tarea", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    proyectoId: DataTypes.INTEGER,
-    soldadorId: DataTypes.INTEGER,
-    descripcion: DataTypes.STRING,
-    prioridad: DataTypes.STRING,
-    fechaAsignacion: DataTypes.DATE,
-    fechaVencimiento: DataTypes.DATE,
-    estado: DataTypes.STRING
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    proyectoId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    soldadorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    descripcion: {
+      type: DataTypes.TEXT
+    },
+    prioridad: {
+      type: DataTypes.STRING
+    },
+    fechaAsignacion: {
+      type: DataTypes.DATE
+    },
+    fechaVencimiento: {
+      type: DataTypes.DATE
+    },
+    estado: {
+      type: DataTypes.STRING
+    }
   });
 
   return Tarea;
