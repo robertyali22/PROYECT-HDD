@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Package, DollarSign, Users, CreditCard, TrendingUp, Search, X, ChevronDown, Filter, Plus, Shield, Activity, Settings, UserCheck, Clock, UserPlus, Download, FileText } from 'lucide-react';
 import { NavBar } from '../components/Navbar';
 import { SideBar } from '../components/Sidebar';
+import { obtenerUsuarios, actualizarUsuario } from '../api/usuarioService';
 
 
 // Componente principal de Gestión de Usuarios
