@@ -3,18 +3,18 @@ const router = express.Router();
 const materialController = require('../controllers/material.controller');
 
 // Crear nuevo material
-router.post('/', materialController.crearMaterial);
+router.post('/', materialController.createMaterial);
 
 // Obtener todos los materiales
-router.get('/', materialController.obtenerMateriales);
+router.get('/', materialController.readMateriales);
 
 // Obtener un material por ID
-router.get('/:id', materialController.obtenerMaterialPorId);
+router.get('/:id', materialController.readMaterial);
 
 // Actualizar un material
-router.put('/:id', materialController.actualizarMaterial);
+router.put('/:id', materialController.updateMaterial);
 
 // Eliminar un material
-router.delete('/:id', materialController.eliminarMaterial);
+router.delete('/:id', materialController.deleteMaterial);
 
 module.exports = router;

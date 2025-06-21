@@ -2,7 +2,7 @@ const db = require('../models');
 const Soldadura = db.Soldadura;
 
 // Crear una nueva soldadura
-exports.crearSoldadura = async (req, res) => {
+exports.createSoldadura = async (req, res) => {
   try {
     const soldadura = await Soldadura.create(req.body);
     res.status(201).json(soldadura);
@@ -12,7 +12,7 @@ exports.crearSoldadura = async (req, res) => {
 };
 
 // Obtener todas las soldaduras
-exports.obtenerSoldaduras = async (req, res) => {
+exports.readSoldaduras = async (req, res) => {
   try {
     const soldaduras = await Soldadura.findAll();
     res.json(soldaduras);
@@ -22,7 +22,7 @@ exports.obtenerSoldaduras = async (req, res) => {
 };
 
 // Obtener soldadura por ID
-exports.obtenerSoldaduraPorId = async (req, res) => {
+exports.readSoldadura = async (req, res) => {
   try {
     const soldadura = await Soldadura.findByPk(req.params.id);
     if (soldadura) {
@@ -36,7 +36,7 @@ exports.obtenerSoldaduraPorId = async (req, res) => {
 };
 
 // Actualizar una soldadura
-exports.actualizarSoldadura = async (req, res) => {
+exports.updateSoldadura = async (req, res) => {
   try {
     const soldadura = await Soldadura.findByPk(req.params.id);
     if (soldadura) {
@@ -51,7 +51,7 @@ exports.actualizarSoldadura = async (req, res) => {
 };
 
 // Eliminar una soldadura
-exports.eliminarSoldadura = async (req, res) => {
+exports.deleteSoldadura = async (req, res) => {
   try {
     const soldadura = await Soldadura.findByPk(req.params.id);
     if (soldadura) {

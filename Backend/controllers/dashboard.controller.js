@@ -2,7 +2,7 @@ const db = require('../models');
 const Dashboard = db.Dashboard;
 
 // Crear un nuevo dashboard
-exports.crearDashboard = async (req, res) => {
+exports.createDashboard = async (req, res) => {
   try {
     const dashboard = await Dashboard.create(req.body);
     res.status(201).json(dashboard);
@@ -12,7 +12,7 @@ exports.crearDashboard = async (req, res) => {
 };
 
 // Obtener todos los dashboards
-exports.obtenerDashboards = async (req, res) => {
+exports.readDashboards = async (req, res) => {
   try {
     const dashboards = await Dashboard.findAll();
     res.json(dashboards);
@@ -22,7 +22,7 @@ exports.obtenerDashboards = async (req, res) => {
 };
 
 // Obtener dashboard por ID
-exports.obtenerDashboardPorId = async (req, res) => {
+exports.readDashboard = async (req, res) => {
   try {
     const dashboard = await Dashboard.findByPk(req.params.id);
     if (dashboard) {
@@ -36,7 +36,7 @@ exports.obtenerDashboardPorId = async (req, res) => {
 };
 
 // Actualizar dashboard
-exports.actualizarDashboard = async (req, res) => {
+exports.updateDashboard = async (req, res) => {
   try {
     const dashboard = await Dashboard.findByPk(req.params.id);
     if (dashboard) {
@@ -51,7 +51,7 @@ exports.actualizarDashboard = async (req, res) => {
 };
 
 // Eliminar dashboard
-exports.eliminarDashboard = async (req, res) => {
+exports.deleteDashboard = async (req, res) => {
   try {
     const dashboard = await Dashboard.findByPk(req.params.id);
     if (dashboard) {

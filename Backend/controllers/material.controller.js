@@ -2,7 +2,7 @@ const db = require('../models');
 const Material = db.Material;
 
 // Crear un nuevo material
-exports.crearMaterial = async (req, res) => {
+exports.createMaterial = async (req, res) => {
   try {
     const material = await Material.create(req.body);
     res.status(201).json(material);
@@ -12,7 +12,7 @@ exports.crearMaterial = async (req, res) => {
 };
 
 // Obtener todos los materiales
-exports.obtenerMateriales = async (req, res) => {
+exports.readMateriales = async (req, res) => {
   try {
     const materiales = await Material.findAll();
     res.json(materiales);
@@ -22,7 +22,7 @@ exports.obtenerMateriales = async (req, res) => {
 };
 
 // Obtener material por ID
-exports.obtenerMaterialPorId = async (req, res) => {
+exports.readMaterial = async (req, res) => {
   try {
     const material = await Material.findByPk(req.params.id);
     if (material) {
@@ -36,7 +36,7 @@ exports.obtenerMaterialPorId = async (req, res) => {
 };
 
 // Actualizar un material
-exports.actualizarMaterial = async (req, res) => {
+exports.updateMaterial = async (req, res) => {
   try {
     const material = await Material.findByPk(req.params.id);
     if (material) {
@@ -51,7 +51,7 @@ exports.actualizarMaterial = async (req, res) => {
 };
 
 // Eliminar un material
-exports.eliminarMaterial = async (req, res) => {
+exports.deleteMaterial = async (req, res) => {
   try {
     const material = await Material.findByPk(req.params.id);
     if (material) {

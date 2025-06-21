@@ -23,6 +23,8 @@ function App() {
           <Route path='/usuarios' element={<GestionUsuarioPage />} />
           <Route path='/asignacion' element={<AsignacionTareasPage />} />
           <Route path='/pruebas' element={<Pruebas />} />
+          <Route path='/usuario' element={<Usuarios />} />
+          
       </Routes>
       <Toaster />
     </BrowserRouter>
