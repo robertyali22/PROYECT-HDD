@@ -1,25 +1,39 @@
 const db = require('../models');
 const Usuario = db.Usuario;
+const Soldador = db.Soldador;
 
 // Crear un nuevo usuario
 exports.createUsuario = async (req, res) => {
   try {
     const usuario = await Usuario.create(req.body);
+
+    if (req.body.rol === "soldador") {
+      await db.Soldador.create({
+        usuarioId: usuario.id,
+        certificaciones: req.body.certificaciones || "",
+        especialidad: "",
+        nivelExperiencia: 0,
+      });
+    }
+
     res.status(201).json(usuario);
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al crear usuario', error });
+    res.status(500).json({ mensaje: "Error al crear usuario", error });
   }
 };
 
 // Obtener todos los usuarios
 exports.readUsuarios = async (req, res) => {
   try {
-    const usuarios = await Usuario.findAll();
+    const usuarios = await Usuario.findAll({
+      include: [{ model: db.Soldador }] 
+    });
     res.json(usuarios);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener usuarios', error });
   }
 };
+
 
 // Obtener usuario por ID
 exports.readUsuario = async (req, res) => {

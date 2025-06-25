@@ -2,26 +2,139 @@ import { useState, useEffect } from "react";
 import { Package, DollarSign, Users, CreditCard, TrendingUp, Search, X, ChevronDown, Filter, Plus, Shield, Activity, Settings, UserCheck, Clock, UserPlus, Download, FileText } from 'lucide-react';
 import { NavBar } from '../components/Navbar';
 import { SideBar } from '../components/Sidebar';
-// import { obtenerUsuarios, crearUsuario, eliminarUsuario, actualizarUsuario } from "../api/UsuarioRequest";
-// import { useForm } from "react-hook-form";
+import { getAllUsuarios, createUsuario, deleteUsuario, updateUsuario } from "../api/UsuarioRequest";
 
 
 // Componente principal de Gestión de Usuarios
 export function GestionUsuarioPage() {
     const [activeTab, setActiveTab] = useState('usuarios');
+    const [usuarios, setUsuarios] = useState([]);
     const [showNewUserModal, setShowNewUserModal] = useState(false);
     const [showEditUserModal, setShowEditUserModal] = useState(false);
     const [userToEdit, setUserToEdit] = useState(null);
     const [showCertificationsField, setShowCertificationsField] = useState(false);
 
+    const [formData, setFormData] = useState({
+        nombre: "",
+        apellido: "",
+        email: "",
+        telefono: "",
+        dni: "",
+        contrasena: "",
+        confirmarContrasena: "",
+        rol: "soldador",
+        estado: true,
+        certificaciones: "",
+    });
+
+    const cargarUsuarios = async () => {
+        try {
+            const response = await getAllUsuarios();
+            const usuariosFormateados = response.data.map((u) => ({
+                id: u.id,
+                nombre: u.nombre,
+                apellido: u.apellido,
+                name: `${u.nombre} ${u.apellido}`,
+                initials: u.nombre[0] + u.apellido[0],
+                email: u.email,
+                role: u.rol.charAt(0).toUpperCase() + u.rol.slice(1),
+                certifications: u?.Soldador?.certificaciones || "",
+                status: u.estado ? "Activo" : "Inactivo",
+                estado: u.estado,
+                since: new Date(u.fechaCreacion).toLocaleDateString(),
+                lastAccess: new Date(u.updatedAt || u.fechaCreacion).toLocaleDateString(),
+            }));
+            setUsuarios(usuariosFormateados);
+        } catch (error) {
+            console.error("Error al cargar usuarios:", error);
+        }
+    };
+
+    useEffect(() => {
+        cargarUsuarios();
+    }, []);
+
     const handleRoleChange = (e) => {
         const role = e.target.value;
-        setShowCertificationsField(role === 'soldador' || role === 'inspector');
+        setFormData({ ...formData, rol: role });
+        setShowCertificationsField(role === "soldador" || role === "inspector");
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({
+            ...formData,
+            [name]: type === "checkbox" ? checked : value,
+        });
+    };
+
+    const handleNewUserClick = () => {
+        setFormData({
+            nombre: "",
+            apellido: "",
+            email: "",
+            telefono: "",
+            dni: "",
+            contrasena: "",
+            confirmarContrasena: "",
+            rol: "soldador",
+            estado: true,
+            certificaciones: "",
+        });
+        setUserToEdit(null);
+        setShowCertificationsField(true);
+        setShowNewUserModal(true);
     };
 
     const handleEditUser = (user) => {
+        const [nombre, apellido] = user.name.split(" ");
         setUserToEdit(user);
+        setFormData({
+            nombre: nombre || "",
+            apellido: apellido || "",
+            email: user.email,
+            contrasena: "",
+            confirmarContrasena: "",
+            rol: user.role.toLowerCase(),
+            estado: user.estado,
+            certificaciones: user.certifications || "",
+        });
+        setShowCertificationsField(user.role.toLowerCase() === "soldador" || user.role.toLowerCase() === "inspector");
         setShowEditUserModal(true);
+    };
+
+
+    const handleDeleteUser = async (id) => {
+        if (confirm("¿Seguro que deseas eliminar este usuario?")) {
+            try {
+                await deleteUsuario(id);
+                await cargarUsuarios();
+            } catch (error) {
+                console.error("Error al eliminar usuario:", error);
+            }
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (!userToEdit && formData.contrasena !== formData.confirmarContrasena) {
+                alert("Las contraseñas no coinciden.");
+                return;
+            }
+
+            if (userToEdit) {
+                await updateUsuario(userToEdit.id, formData);
+                setShowEditUserModal(false);
+            } else {
+                await createUsuario(formData);
+                setShowNewUserModal(false);
+            }
+            cargarUsuarios();
+        } catch (error) {
+            console.error("Error al guardar usuario:", error);
+        }
+
     };
 
     return (
@@ -44,7 +157,7 @@ export function GestionUsuarioPage() {
                             </div>
                         </div>
 
-{/* Navigation Tabs */}
+                        {/* Navigation Tabs */}
                         <div className="mb-8">
                             <div className="border-b border-gray-200">
                                 <nav className="-mb-px flex space-x-8 overflow-x-auto">
@@ -201,9 +314,9 @@ export function GestionUsuarioPage() {
                                         <span>Último acceso: hoy</span>
                                     </div>
                                 </div>
-                            </div>      
+                            </div>
                         </div>
-                        
+
                         {/* Sección de filtros */}
                         <div className="bg-gradient-to-r from-white to-gray-50 border border-gray-200/60 rounded-2xl p-6 mb-8 shadow-sm">
                             {/* Header de filtros */}
@@ -341,7 +454,7 @@ export function GestionUsuarioPage() {
                             </div>
                             <button
                                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl text-sm px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
-                                onClick={() => setShowNewUserModal(true)}
+                                onClick={handleNewUserClick}
                             >
                                 <Plus size={18} />
                                 Nuevo Usuario
@@ -391,7 +504,7 @@ export function GestionUsuarioPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {usuarios.map((user, index) => (
+                                        {usuarios.map((user) => (
                                             <tr
                                                 key={user.id}
                                                 className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 group"
@@ -462,13 +575,26 @@ export function GestionUsuarioPage() {
 
                                                 {/* Acciones */}
                                                 <td className="px-6 py-5">
-                                                    <div className="flex justify-center gap-2">
+                                                    <div className="flex justify-center flex-wrap gap-2">
+                                                        {/* Botón Editar */}
                                                         <button
                                                             className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                                                             onClick={() => handleEditUser(user)}
                                                         >
                                                             Editar
                                                         </button>
+
+                                                        {/* Botón Eliminar */}
+                                                        {user.name !== 'Robert Yali' && (
+                                                            <button
+                                                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                                                                onClick={() => handleDeleteUser(user.id)}
+                                                            >
+                                                                Eliminar
+                                                            </button>
+                                                        )}
+
+                                                        {/* Otros estados */}
                                                         {user.name === 'Robert Yali' ? (
                                                             <button
                                                                 className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md opacity-50 cursor-not-allowed"
@@ -491,6 +617,7 @@ export function GestionUsuarioPage() {
                                                         )}
                                                     </div>
                                                 </td>
+
                                             </tr>
                                         ))}
                                     </tbody>
@@ -530,8 +657,11 @@ export function GestionUsuarioPage() {
                         {/* Modal para Nuevo Usuario */}
                         {showNewUserModal && (
                             <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 to-black/60 flex items-center justify-center z-50 p-4">
-                                <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] transform transition-all duration-300 animate-in zoom-in-95 flex flex-col">
-                                    {/* Header del Modal */}
+                                <form
+                                    onSubmit={handleSubmit}
+                                    className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] transform transition-all duration-300 animate-in zoom-in-95 flex flex-col"
+                                >
+                                    {/* Header */}
                                     <div className="relative bg-gradient-to-r from-blue-700 to-blue-800 rounded-t-3xl px-8 py-6 flex-shrink-0">
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center gap-4">
@@ -544,6 +674,7 @@ export function GestionUsuarioPage() {
                                                 </div>
                                             </div>
                                             <button
+                                                type="button"
                                                 className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white hover:text-gray-100 transition-all duration-300 hover:scale-110"
                                                 onClick={() => setShowNewUserModal(false)}
                                             >
@@ -552,9 +683,27 @@ export function GestionUsuarioPage() {
                                         </div>
                                     </div>
 
-                                    {/* Body del Modal - Scrollable */}
-                                    <div className="flex-1 overflow-y-auto p-8">
-                                        {/* Información personal */}
+                                    {/* Body */}
+                                    <div className="flex-1 overflow-y-auto p-8 space-y-12">
+
+                                        {/* Información Personal */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
+                                                Información Personal
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Nombre</label>
+                                                    <input name="nombre" value={formData.nombre} onChange={handleInputChange} placeholder="Ingrese el nombre" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" required />
+                                                </div>
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Apellidos</label>
+                                                    <input name="apellido" value={formData.apellido} onChange={handleInputChange} placeholder="Ingrese los apellidos" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" required />
+                                                </div>
+                                            </div>
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
@@ -566,22 +715,58 @@ export function GestionUsuarioPage() {
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
                                                     <input
                                                         type="text"
+                                                        name="nombre"
+                                                        value={formData.nombre}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                         placeholder="Ingrese el nombre"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Apellidos</label>
                                                     <input
                                                         type="text"
+                                                        name="apellido"
+                                                        value={formData.apellido}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                         placeholder="Ingrese los apellidos"
+                                                        required
                                                     />
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Información de contacto */}
+
+                                        {/* Contacto */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
+                                                Información de Contacto
+                                            </h4>
+                                            <div className="space-y-6">
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Correo Electrónico</label>
+                                                    <input name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="ejemplo@soldacontrol.com" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" required />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Teléfono</label>
+                                                        <input type="tel" name="telefono" value={formData.telefono} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" placeholder="+51 999 999 999" required />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <label className="text-sm font-semibold text-gray-700 mb-2 block">DNI</label>
+                                                        <input type="text" name="dni" value={formData.dni} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" placeholder="12345678" required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
@@ -593,8 +778,12 @@ export function GestionUsuarioPage() {
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico</label>
                                                     <input
                                                         type="email"
+                                                        name="email"
+                                                        value={formData.email}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                         placeholder="ejemplo@soldacontrol.com"
+                                                        required
                                                     />
                                                 </div>
 
@@ -603,23 +792,58 @@ export function GestionUsuarioPage() {
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Teléfono</label>
                                                         <input
                                                             type="tel"
+                                                            name="telefono"
+                                                            value={formData.telefono}
+                                                            onChange={handleInputChange}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                             placeholder="+51 999 999 999"
+                                                            required
                                                         />
                                                     </div>
                                                     <div className="relative group">
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">DNI</label>
                                                         <input
                                                             type="text"
+                                                            name="dni"
+                                                            value={formData.dni}
+                                                            onChange={handleInputChange}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                             placeholder="12345678"
+                                                            required
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Información profesional */}
+                                        {/* Profesional */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-600 rounded-full"></div>
+                                                Información Profesional
+                                            </h4>
+                                            <div className="space-y-6">
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Rol</label>
+                                                    <select name="rol" value={formData.rol} onChange={handleRoleChange} className="input-style" required>
+                                                        <option value="">Seleccionar rol</option>
+                                                        <option value="administrador">Administrador</option>
+                                                        <option value="supervisor">Supervisor</option>
+                                                        <option value="soldador">Soldador</option>
+                                                        <option value="inspector">Inspector</option>
+                                                        <option value="ayudante">Ayudante</option>
+                                                    </select>
+                                                </div>
+                                                {showCertificationsField && (
+                                                    <div>
+                                                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Certificaciones</label>
+                                                        <input name="certificaciones" value={formData.certificaciones} onChange={handleInputChange} placeholder="MIG, TIG, 6G" className="input-style" />
+                                                        <p className="mt-1 text-sm text-gray-500">Separar múltiples certificaciones con comas</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-600 rounded-full"></div>
@@ -630,8 +854,11 @@ export function GestionUsuarioPage() {
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Rol</label>
                                                     <select
-                                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
+                                                        name="rol"
+                                                        value={formData.rol}
                                                         onChange={handleRoleChange}
+                                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
+                                                        required
                                                     >
                                                         <option value="">Seleccionar rol</option>
                                                         <option value="admin">Administrador</option>
@@ -647,6 +874,9 @@ export function GestionUsuarioPage() {
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Certificaciones</label>
                                                         <input
                                                             type="text"
+                                                            name="certificaciones"
+                                                            value={formData.certificaciones}
+                                                            onChange={handleInputChange}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                             placeholder="MIG, TIG, 6G, etc."
                                                         />
@@ -660,6 +890,23 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Seguridad */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
+                                                Seguridad
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Contraseña</label>
+                                                    <input name="contrasena" type="password" value={formData.contrasena} onChange={handleInputChange} className="input-style" required />
+                                                </div>
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Confirmar Contraseña</label>
+                                                    <input name="confirmarContrasena" type="password" value={formData.confirmarContrasena} onChange={handleInputChange} className="input-style" required />
+                                                </div>
+                                            </div>
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
@@ -671,46 +918,71 @@ export function GestionUsuarioPage() {
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
                                                     <input
                                                         type="password"
+                                                        name="contrasena"
+                                                        value={formData.contrasena}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                         placeholder="Mínimo 8 caracteres"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Confirmar Contraseña</label>
                                                     <input
                                                         type="password"
+                                                        name="confirmarContrasena"
+                                                        value={formData.confirmarContrasena}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                         placeholder="Confirme la contraseña"
+                                                        required
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Footer del Modal - Fixed */}
-                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-b-3xl px-8 py-6 border-t border-gray-200 flex-shrink-0">
+                                    {/* Footer */}
+                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-b-3xl px-8 py-6 border-t border-gray-200">
                                         <div className="flex flex-col sm:flex-row justify-end gap-4">
                                             <button
-                                                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                                                type="button"
                                                 onClick={() => setShowNewUserModal(false)}
+                                                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+
                                             >
                                                 Cancelar
                                             </button>
-                                            <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                                            <button
+                                                type="submit"
+                                                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                                            >
                                                 <Users size={18} />
                                                 Guardar Usuario
                                             </button>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         )}
 
                         {/* Modal para Editar Usuario */}
                         {showEditUserModal && userToEdit && (
                             <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 to-black/60 flex items-center justify-center z-50 p-4">
-                                <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] transform transition-all duration-300 animate-in zoom-in-95 flex flex-col">
-                                    {/* Header del Modal */}
+                                <form
+                                    onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        try {
+                                            await updateUsuario(userToEdit.id, formData);
+                                            setShowEditUserModal(false);
+                                            cargarUsuarios();
+                                        } catch (error) {
+                                            console.error("Error al actualizar usuario:", error);
+                                        }
+                                    }}
+                                    className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] transform transition-all duration-300 animate-in zoom-in-95 flex flex-col"
+                                >
+                                    {/* Header */}
                                     <div className="relative bg-gradient-to-r from-blue-700 to-blue-800 rounded-t-3xl px-8 py-6 flex-shrink-0">
                                         <div className="flex justify-between items-center">
                                             <div className="flex items-center gap-4">
@@ -723,20 +995,21 @@ export function GestionUsuarioPage() {
                                                 </div>
                                             </div>
                                             <button
-                                                className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white hover:text-gray-100 transition-all duration-300 hover:scale-110"
+                                                type="button"
                                                 onClick={() => setShowEditUserModal(false)}
+                                                className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center text-white hover:text-gray-100 transition-all duration-300 hover:scale-110"
                                             >
                                                 <X size={20} />
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* Body del Modal - Scrollable */}
-                                    <div className="flex-1 overflow-y-auto p-8">
-                                        {/* Usuario actual info */}
-                                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-xl p-6 mb-8">
+                                    {/* Body */}
+                                    <div className="flex-1 overflow-y-auto p-8 space-y-10">
+                                        {/* Usuario actual */}
+                                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-xl p-6">
                                             <div className="flex items-center gap-4">
-                                                <div className={`w-14 h-14 rounded-2xl ${userToEdit.avatarBg || 'bg-gradient-to-br from-blue-500 to-blue-600'} flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
+                                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                                     {userToEdit.initials}
                                                 </div>
                                                 <div>
@@ -748,33 +1021,83 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Información personal */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
+                                                Información Personal
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <input
+                                                    name="nombre"
+                                                    value={formData.nombre}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
+                                                    placeholder="Nombre"
+                                                    required
+                                                />
+                                                <input
+                                                    name="apellido"
+                                                    value={formData.apellido}
+                                                    onChange={handleInputChange}
+                                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
+                                                    placeholder="Apellidos"
+                                                    required
+                                                />
+                                            </div>
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
                                                 <h4 className="text-lg font-semibold text-gray-800">Información Personal</h4>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 mds:grid-cols-2 gap-6">
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
                                                     <input
                                                         type="text"
+                                                        name="nombre"
+                                                        value={formData.nombre}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                        defaultValue={userToEdit.name.split(' ')[0]}
+                                                        placeholder="Nombre"
+                                                        required
                                                     />
                                                 </div>
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Apellidos</label>
                                                     <input
                                                         type="text"
+                                                        name="apellido"
+                                                        value={formData.apellido}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                        defaultValue={userToEdit.name.split(' ')[1] || ''}
+                                                        placeholder="Apellidos"
+                                                        required
                                                     />
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Información de contacto */}
+                                        {/* Contacto */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
+                                                Información de Contacto
+                                            </h4>
+                                            <input
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                type="email"
+                                                className="input-style"
+                                                placeholder="Correo Electrónico"
+                                                required
+                                            />
+                                        </section> */}
+
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
@@ -786,8 +1109,12 @@ export function GestionUsuarioPage() {
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico</label>
                                                     <input
                                                         type="email"
+                                                        name="email"
+                                                        value={formData.email}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                        defaultValue={userToEdit.email}
+                                                        placeholder="Correo Electrónico"
+                                                        required
                                                     />
                                                 </div>
 
@@ -796,38 +1123,102 @@ export function GestionUsuarioPage() {
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Teléfono</label>
                                                         <input
                                                             type="tel"
+                                                            name="telefono"
+                                                            value={formData.telefono}
+                                                            onChange={handleInputChange}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                            defaultValue="+51 987 654 321"
+                                                            placeholder="Teléfono"
+                                                            required
                                                         />
                                                     </div>
                                                     <div className="relative group">
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">DNI</label>
                                                         <input
                                                             type="text"
+                                                            name="dni"
+                                                            value={formData.dni}
+                                                            onChange={handleInputChange}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                            defaultValue="43215678"
+                                                            placeholder="DNI"
+                                                            required
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Información profesional */}
+                                        {/* Profesional */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-600 rounded-full"></div>
+                                                Información Profesional
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <select
+                                                    name="rol"
+                                                    value={formData.rol}
+                                                    onChange={(e) => {
+                                                        handleInputChange(e);
+                                                        setShowCertificationsField(["soldador", "inspector"].includes(e.target.value));
+                                                    }}
+                                                    className="input-style"
+                                                    required
+                                                >
+                                                    <option value="administrador">Administrador</option>
+                                                    <option value="supervisor">Supervisor</option>
+                                                    <option value="soldador">Soldador</option>
+                                                    <option value="inspector">Inspector</option>
+                                                    <option value="ayudante">Ayudante</option>
+                                                </select>
+
+                                                <select
+                                                    name="estado"
+                                                    value={formData.estado ? "activo" : "inactivo"}
+                                                    onChange={(e) =>
+                                                        setFormData({ ...formData, estado: e.target.value === "activo" })
+                                                    }
+                                                    className="input-style"
+                                                >
+                                                    <option value="activo">Activo</option>
+                                                    <option value="inactivo">Inactivo</option>
+                                                </select>
+                                            </div>
+
+                                            {showCertificationsField && (
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Certificaciones</label>
+                                                    <input
+                                                        name="certificaciones"
+                                                        value={formData.certificaciones}
+                                                        onChange={handleInputChange}
+                                                        className="input-style"
+                                                        placeholder="MIG, TIG, etc."
+                                                    />
+                                                    <p className="text-sm text-gray-500 mt-1">Separar con comas</p>
+                                                </div>
+                                            )}
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-600 rounded-full"></div>
                                                 <h4 className="text-lg font-semibold text-gray-800">Información Profesional</h4>
                                             </div>
-
                                             <div className="space-y-6">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="relative group">
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Rol</label>
                                                         <select
+                                                            name="rol"
+                                                            value={formData.rol}
+                                                            onChange={(e) => {
+                                                                handleInputChange(e);
+                                                                setShowCertificationsField(["soldador", "inspector"].includes(e.target.value));
+                                                            }}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                            defaultValue={userToEdit.role.toLowerCase()}
+                                                            required
                                                         >
-                                                            <option value="admin">Administrador</option>
+                                                            <option value="administrador">Administrador</option>
                                                             <option value="supervisor">Supervisor</option>
                                                             <option value="soldador">Soldador</option>
                                                             <option value="inspector">Inspector</option>
@@ -847,13 +1238,16 @@ export function GestionUsuarioPage() {
                                                     </div>
                                                 </div>
 
-                                                {(userToEdit.role === 'Soldador' || userToEdit.role === 'Inspector') && (
+                                                {showCertificationsField && (
                                                     <div className="relative group">
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Certificaciones</label>
                                                         <input
                                                             type="text"
+                                                            name="certificaciones"
+                                                            value={formData.certificaciones}
+                                                            onChange={handleInputChange}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                            defaultValue={userToEdit.certifications || ''}
+                                                            placeholder="MIG, TIG, etc."
                                                         />
                                                         <p className="mt-2 text-sm text-gray-500 flex items-center gap-2">
                                                             <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
@@ -865,6 +1259,28 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Seguridad */}
+                                        {/* <section>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
+                                                Cambiar Contraseña
+                                            </h4>
+
+                                            <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 mb-4">
+                                                <p className="text-yellow-800 text-sm">
+                                                    Deje en blanco si no desea cambiar la contraseña
+                                                </p>
+                                            </div>
+
+                                            <input
+                                                name="contrasena"
+                                                type="password"
+                                                value={formData.contrasena}
+                                                onChange={handleInputChange}
+                                                className="input-style"
+                                                placeholder="Nueva contraseña (opcional)"
+                                            />
+                                        </section> */}
+
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
                                                 <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
@@ -881,30 +1297,39 @@ export function GestionUsuarioPage() {
                                             <div className="relative group">
                                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Nueva Contraseña</label>
                                                 <input
+                                                    name="contrasena"
                                                     type="password"
+                                                    value={formData.contrasena}
+                                                    onChange={handleInputChange}
                                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                     placeholder="Nueva contraseña (opcional)"
+
+
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Footer del Modal - Fixed */}
-                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-b-3xl px-8 py-6 border-t border-gray-200 flex-shrink-0">
+                                    {/* Footer */}
+                                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-b-3xl px-8 py-6 border-t border-gray-200">
                                         <div className="flex flex-col sm:flex-row justify-end gap-4">
                                             <button
-                                                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                                                type="button"
                                                 onClick={() => setShowEditUserModal(false)}
+                                                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                                             >
                                                 Cancelar
                                             </button>
-                                            <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                                            <button
+                                                type="submit"
+                                                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+                                            >
                                                 <Search size={18} />
                                                 Guardar Cambios
                                             </button>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         )}
                     </div>
@@ -914,19 +1339,7 @@ export function GestionUsuarioPage() {
     );
 }
 
-// Componente para las tarjetas de estadísticas
-function StatCard({ icon, title, value, detail }) {
-    return (
-        <div className="bg-white p-4 rounded-lg shadow border border-blue-100">
-            <div className="float-right bg-blue-100 text-blue-500 w-12 h-12 rounded-lg flex items-center justify-center text-xl">
-                {icon}
-            </div>
-            <div className="text-gray-500 text-sm mb-1">{title}</div>
-            <div className="text-2xl font-bold text-gray-800 mb-1">{value}</div>
-            <div className="text-sm text-gray-600">{detail}</div>
-        </div>
-    );
-}
+
 
 // Función para determinar color del badge de rol
 function getRoleBadgeColor(role) {
@@ -959,126 +1372,3 @@ function getStatusBadgeColor(status) {
             return 'bg-gray-100 text-gray-800';
     }
 }
-
-// Datos de ejemplo para usuarios
-const usuarios = [
-    {
-        id: 1,
-        name: 'Carlos Méndez',
-        initials: 'CM',
-        since: '12/03/2023',
-        email: 'carlos.mendez@example.com',
-        role: 'Soldador',
-        certifications: 'MIG, TIG, 6G',
-        status: 'Activo',
-        lastAccess: 'Hoy, 10:25 AM'
-    },
-    {
-        id: 2,
-        name: 'Juana Ramírez',
-        initials: 'JR',
-        since: '05/06/2022',
-        email: 'juana.ramirez@example.com',
-        role: 'Soldador',
-        avatarBg: 'bg-blue-400',
-        certifications: 'MIG, 4G',
-        status: 'Activo',
-        lastAccess: 'Hoy, 09:10 AM'
-    },
-    {
-        id: 3,
-        name: 'Robert Yali',
-        initials: 'RY',
-        since: '10/01/2020',
-        email: 'robert.yali@example.com',
-        role: 'Administrador',
-        avatarBg: 'bg-red-400',
-        certifications: null,
-        status: 'Activo',
-        lastAccess: 'Hoy, 11:45 AM'
-    },
-    {
-        id: 4,
-        name: 'Luis Prado',
-        initials: 'LP',
-        since: '22/09/2021',
-        email: 'luis.prado@example.com',
-        role: 'Inspector',
-        avatarBg: 'bg-indigo-400',
-        certifications: 'CWI, NDT Nivel II',
-        status: 'Activo',
-        lastAccess: 'Ayer, 03:20 PM'
-    },
-    {
-        id: 5,
-        name: 'Ana García',
-        initials: 'AG',
-        since: '15/04/2023',
-        email: 'ana.garcia@example.com',
-        role: 'Supervisor',
-        avatarBg: 'bg-blue-500',
-        certifications: null,
-        status: 'Activo',
-        lastAccess: 'Hoy, 08:30 AM'
-    },
-    {
-        id: 6,
-        name: 'Pedro Torres',
-        initials: 'PT',
-        since: '08/11/2023',
-        email: 'pedro.torres@example.com',
-        role: 'Soldador',
-        avatarBg: 'bg-green-500',
-        certifications: 'SMAW, GTAW',
-        status: 'Inactivo',
-        lastAccess: 'Hace 5 días'
-    },
-    {
-        id: 7,
-        name: 'María López',
-        initials: 'ML',
-        since: '03/02/2024',
-        email: 'maria.lopez@example.com',
-        role: 'Ayudante',
-        avatarBg: 'bg-orange-500',
-        certifications: null,
-        status: 'Pendiente',
-        lastAccess: 'Nunca'
-    },
-    {
-        id: 8,
-        name: 'Jorge Silva',
-        initials: 'JS',
-        since: '18/07/2022',
-        email: 'jorge.silva@example.com',
-        role: 'Inspector',
-        avatarBg: 'bg-purple-500',
-        certifications: 'AWS CWI, API 1104',
-        status: 'Activo',
-        lastAccess: 'Hoy, 07:15 AM'
-    },
-    {
-        id: 9,
-        name: 'Carmen Díaz',
-        initials: 'CD',
-        since: '25/01/2023',
-        email: 'carmen.diaz@example.com',
-        role: 'Soldador',
-        avatarBg: 'bg-pink-500',
-        certifications: 'MIG, TIG, FCAW',
-        status: 'Activo',
-        lastAccess: 'Ayer, 06:45 PM'
-    },
-    {
-        id: 10,
-        name: 'Diego Herrera',
-        initials: 'DH',
-        since: '14/05/2021',
-        email: 'diego.herrera@example.com',
-        role: 'Supervisor',
-        avatarBg: 'bg-teal-500',
-        certifications: null,
-        status: 'Activo',
-        lastAccess: 'Hoy, 09:55 AM'
-    }
-];

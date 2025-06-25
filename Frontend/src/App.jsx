@@ -8,7 +8,7 @@ import { InventarioPage } from './pages/InventarioPage'
 import { GestionUsuarioPage } from './pages/GestionUsuarioPage'
 import { AsignacionTareasPage } from './pages/AsignacionTareasPage'
 import { Pruebas } from './pages/Pruebas' 
-import { Usuarios } from './pages/Usuarios' 
+// import { Usuarios } from './pages/Usuarios' 
 
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
           <Route path='/usuarios' element={<GestionUsuarioPage />} />
           <Route path='/asignacion' element={<AsignacionTareasPage />} />
           <Route path='/pruebas' element={<Pruebas />} />
-          <Route path='/usuario' element={<Usuarios />} />
+   
           
       </Routes>
       <Toaster />
