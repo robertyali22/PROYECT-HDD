@@ -5,11 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    soldaduraId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    administradorId: {
+    usuarioId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -25,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     aprobado: {
       type: DataTypes.BOOLEAN
     }
+  }, {
+    tableName: 'control_calidad',
+    timestamps: false
   });
 
   return ControlCalidad;

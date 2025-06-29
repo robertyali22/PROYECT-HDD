@@ -3,16 +3,18 @@ import { Package, DollarSign, Users, CreditCard, TrendingUp, Search, X, ChevronD
 import { NavBar } from '../components/Navbar';
 import { SideBar } from '../components/Sidebar';
 import { getAllUsuarios, createUsuario, deleteUsuario, updateUsuario } from "../api/UsuarioRequest";
+import { getAllRoles } from "../api/RolRequest";
 
 
 // Componente principal de Gestión de Usuarios
 export function GestionUsuarioPage() {
-    const [activeTab, setActiveTab] = useState('usuarios');
+    const [activeTab, setActiveTab] = useState("usuarios");
     const [usuarios, setUsuarios] = useState([]);
     const [showNewUserModal, setShowNewUserModal] = useState(false);
     const [showEditUserModal, setShowEditUserModal] = useState(false);
     const [userToEdit, setUserToEdit] = useState(null);
     const [showCertificationsField, setShowCertificationsField] = useState(false);
+    const [roles, setRoles] = useState([]);
 
     const [formData, setFormData] = useState({
         nombre: "",
@@ -22,10 +24,19 @@ export function GestionUsuarioPage() {
         dni: "",
         contrasena: "",
         confirmarContrasena: "",
-        rol: "soldador",
+        rolId: 1,
         estado: true,
         certificaciones: "",
     });
+
+    const cargarRoles = async () => {
+        try {
+            const response = await getAllRoles();
+            setRoles(response.data);
+        } catch (error) {
+            console.error("Error al cargar roles:", error);
+        }
+    };
 
     const cargarUsuarios = async () => {
         try {
@@ -37,8 +48,11 @@ export function GestionUsuarioPage() {
                 name: `${u.nombre} ${u.apellido}`,
                 initials: u.nombre[0] + u.apellido[0],
                 email: u.email,
-                role: u.rol.charAt(0).toUpperCase() + u.rol.slice(1),
-                certifications: u?.Soldador?.certificaciones || "",
+                telefono: u.telefono,
+                dni: u.dni,
+                role: u.Rol?.nombre || "Sin rol",
+                roleId: u.rolId,
+                certifications: u.certificaciones || "",
                 status: u.estado ? "Activo" : "Inactivo",
                 estado: u.estado,
                 since: new Date(u.fechaCreacion).toLocaleDateString(),
@@ -51,14 +65,9 @@ export function GestionUsuarioPage() {
     };
 
     useEffect(() => {
+        cargarRoles();
         cargarUsuarios();
     }, []);
-
-    const handleRoleChange = (e) => {
-        const role = e.target.value;
-        setFormData({ ...formData, rol: role });
-        setShowCertificationsField(role === "soldador" || role === "inspector");
-    };
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -77,7 +86,7 @@ export function GestionUsuarioPage() {
             dni: "",
             contrasena: "",
             confirmarContrasena: "",
-            rol: "soldador",
+            rolId: 1,
             estado: true,
             certificaciones: "",
         });
@@ -93,16 +102,21 @@ export function GestionUsuarioPage() {
             nombre: nombre || "",
             apellido: apellido || "",
             email: user.email,
+            telefono: user.telefono || "",
+            dni: user.dni || "",
             contrasena: "",
             confirmarContrasena: "",
-            rol: user.role.toLowerCase(),
+            rolId: user.roleId,
             estado: user.estado,
             certificaciones: user.certifications || "",
         });
-        setShowCertificationsField(user.role.toLowerCase() === "soldador" || user.role.toLowerCase() === "inspector");
+
+        const selectedRole = roles.find((r) => r.id === user.roleId);
+        setShowCertificationsField(
+            selectedRole?.nombre === "soldador" || selectedRole?.nombre === "inspector"
+        );
         setShowEditUserModal(true);
     };
-
 
     const handleDeleteUser = async (id) => {
         if (confirm("¿Seguro que deseas eliminar este usuario?")) {
@@ -134,8 +148,8 @@ export function GestionUsuarioPage() {
         } catch (error) {
             console.error("Error al guardar usuario:", error);
         }
-
     };
+
 
     return (
         <>
@@ -539,7 +553,7 @@ export function GestionUsuarioPage() {
                                                 <td className="px-6 py-5">
                                                     <span className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold shadow-sm ${getRoleBadgeColor(user.role)} group-hover:scale-105 transition-transform duration-300`}>
                                                         <div className="w-2 h-2 rounded-full bg-current opacity-60 mr-2"></div>
-                                                        {user.role}
+                                                        {user.roleId === 1 ? 'Administrador' : user.roleId === 2 ? 'Supervisor' : user.roleId === 3 ? 'Soldador' : user.roleId === 4 ? 'Inspector' : 'Ayudante'}
                                                     </span>
                                                 </td>
 
@@ -687,22 +701,6 @@ export function GestionUsuarioPage() {
                                     <div className="flex-1 overflow-y-auto p-8 space-y-12">
 
                                         {/* Información Personal */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
-                                                Información Personal
-                                            </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div>
-                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Nombre</label>
-                                                    <input name="nombre" value={formData.nombre} onChange={handleInputChange} placeholder="Ingrese el nombre" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" required />
-                                                </div>
-                                                <div>
-                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Apellidos</label>
-                                                    <input name="apellido" value={formData.apellido} onChange={handleInputChange} placeholder="Ingrese los apellidos" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" required />
-                                                </div>
-                                            </div>
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -740,32 +738,6 @@ export function GestionUsuarioPage() {
 
 
                                         {/* Contacto */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
-                                                Información de Contacto
-                                            </h4>
-                                            <div className="space-y-6">
-                                                <div>
-                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Correo Electrónico</label>
-                                                    <input name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="ejemplo@soldacontrol.com" className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" required />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div className="space-y-6">
-                                                    <div>
-                                                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Teléfono</label>
-                                                        <input type="tel" name="telefono" value={formData.telefono} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" placeholder="+51 999 999 999" required />
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-6">
-                                                    <div>
-                                                        <label className="text-sm font-semibold text-gray-700 mb-2 block">DNI</label>
-                                                        <input type="text" name="dni" value={formData.dni} onChange={handleInputChange} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white" placeholder="12345678" required />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -817,32 +789,6 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Profesional */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-600 rounded-full"></div>
-                                                Información Profesional
-                                            </h4>
-                                            <div className="space-y-6">
-                                                <div>
-                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Rol</label>
-                                                    <select name="rol" value={formData.rol} onChange={handleRoleChange} className="input-style" required>
-                                                        <option value="">Seleccionar rol</option>
-                                                        <option value="administrador">Administrador</option>
-                                                        <option value="supervisor">Supervisor</option>
-                                                        <option value="soldador">Soldador</option>
-                                                        <option value="inspector">Inspector</option>
-                                                        <option value="ayudante">Ayudante</option>
-                                                    </select>
-                                                </div>
-                                                {showCertificationsField && (
-                                                    <div>
-                                                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Certificaciones</label>
-                                                        <input name="certificaciones" value={formData.certificaciones} onChange={handleInputChange} placeholder="MIG, TIG, 6G" className="input-style" />
-                                                        <p className="mt-1 text-sm text-gray-500">Separar múltiples certificaciones con comas</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -854,19 +800,20 @@ export function GestionUsuarioPage() {
                                                 <div className="relative group">
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Rol</label>
                                                     <select
-                                                        name="rol"
-                                                        value={formData.rol}
-                                                        onChange={handleRoleChange}
+                                                        name="rolId"
+                                                        value={formData.rolId}
+                                                        onChange={handleInputChange}
                                                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                         required
                                                     >
                                                         <option value="">Seleccionar rol</option>
-                                                        <option value="admin">Administrador</option>
-                                                        <option value="supervisor">Supervisor</option>
-                                                        <option value="soldador">Soldador</option>
-                                                        <option value="inspector">Inspector</option>
-                                                        <option value="ayudante">Ayudante</option>
+                                                        {roles.map((rol) => (
+                                                            <option key={rol.id} value={rol.id}>
+                                                                {rol.nombre.charAt(0).toUpperCase() + rol.nombre.slice(1)}
+                                                            </option>
+                                                        ))}
                                                     </select>
+
                                                 </div>
 
                                                 {showCertificationsField && (
@@ -881,7 +828,7 @@ export function GestionUsuarioPage() {
                                                             placeholder="MIG, TIG, 6G, etc."
                                                         />
                                                         <p className="mt-2 text-sm text-gray-500 flex items-center gap-2">
-                                                            <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                                                            
                                                             Separar múltiples certificaciones con comas
                                                         </p>
                                                     </div>
@@ -890,22 +837,6 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Seguridad */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
-                                                Seguridad
-                                            </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div>
-                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Contraseña</label>
-                                                    <input name="contrasena" type="password" value={formData.contrasena} onChange={handleInputChange} className="input-style" required />
-                                                </div>
-                                                <div>
-                                                    <label className="text-sm font-semibold text-gray-700 mb-2 block">Confirmar Contraseña</label>
-                                                    <input name="confirmarContrasena" type="password" value={formData.confirmarContrasena} onChange={handleInputChange} className="input-style" required />
-                                                </div>
-                                            </div>
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -1021,30 +952,6 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Información personal */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></div>
-                                                Información Personal
-                                            </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <input
-                                                    name="nombre"
-                                                    value={formData.nombre}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                    placeholder="Nombre"
-                                                    required
-                                                />
-                                                <input
-                                                    name="apellido"
-                                                    value={formData.apellido}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
-                                                    placeholder="Apellidos"
-                                                    required
-                                                />
-                                            </div>
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -1081,22 +988,6 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Contacto */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
-                                                Información de Contacto
-                                            </h4>
-                                            <input
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                                type="email"
-                                                className="input-style"
-                                                placeholder="Correo Electrónico"
-                                                required
-                                            />
-                                        </section> */}
-
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -1148,56 +1039,6 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Profesional */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-600 rounded-full"></div>
-                                                Información Profesional
-                                            </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <select
-                                                    name="rol"
-                                                    value={formData.rol}
-                                                    onChange={(e) => {
-                                                        handleInputChange(e);
-                                                        setShowCertificationsField(["soldador", "inspector"].includes(e.target.value));
-                                                    }}
-                                                    className="input-style"
-                                                    required
-                                                >
-                                                    <option value="administrador">Administrador</option>
-                                                    <option value="supervisor">Supervisor</option>
-                                                    <option value="soldador">Soldador</option>
-                                                    <option value="inspector">Inspector</option>
-                                                    <option value="ayudante">Ayudante</option>
-                                                </select>
-
-                                                <select
-                                                    name="estado"
-                                                    value={formData.estado ? "activo" : "inactivo"}
-                                                    onChange={(e) =>
-                                                        setFormData({ ...formData, estado: e.target.value === "activo" })
-                                                    }
-                                                    className="input-style"
-                                                >
-                                                    <option value="activo">Activo</option>
-                                                    <option value="inactivo">Inactivo</option>
-                                                </select>
-                                            </div>
-
-                                            {showCertificationsField && (
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Certificaciones</label>
-                                                    <input
-                                                        name="certificaciones"
-                                                        value={formData.certificaciones}
-                                                        onChange={handleInputChange}
-                                                        className="input-style"
-                                                        placeholder="MIG, TIG, etc."
-                                                    />
-                                                    <p className="text-sm text-gray-500 mt-1">Separar con comas</p>
-                                                </div>
-                                            )}
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -1209,20 +1050,22 @@ export function GestionUsuarioPage() {
                                                     <div className="relative group">
                                                         <label className="block text-sm font-semibold text-gray-700 mb-2">Rol</label>
                                                         <select
-                                                            name="rol"
-                                                            value={formData.rol}
+                                                            name="rolId"
+                                                            value={formData.rolId}
                                                             onChange={(e) => {
                                                                 handleInputChange(e);
-                                                                setShowCertificationsField(["soldador", "inspector"].includes(e.target.value));
+                                                                const selectedRole = roles.find((r) => r.id === parseInt(e.target.value));
+                                                                setShowCertificationsField(["soldador", "inspector"].includes(selectedRole?.nombre));
                                                             }}
                                                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:bg-white"
                                                             required
                                                         >
-                                                            <option value="administrador">Administrador</option>
-                                                            <option value="supervisor">Supervisor</option>
-                                                            <option value="soldador">Soldador</option>
-                                                            <option value="inspector">Inspector</option>
-                                                            <option value="ayudante">Ayudante</option>
+                                                            <option value="">Seleccionar rol</option>
+                                                            {roles.map((rol) => (
+                                                                <option key={rol.id} value={rol.id}>
+                                                                    {rol.nombre.charAt(0).toUpperCase() + rol.nombre.slice(1)}
+                                                                </option>
+                                                            ))}
                                                         </select>
                                                     </div>
                                                     <div className="relative group">
@@ -1250,7 +1093,7 @@ export function GestionUsuarioPage() {
                                                             placeholder="MIG, TIG, etc."
                                                         />
                                                         <p className="mt-2 text-sm text-gray-500 flex items-center gap-2">
-                                                            <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                                                            
                                                             Separar múltiples certificaciones con comas
                                                         </p>
                                                     </div>
@@ -1259,27 +1102,6 @@ export function GestionUsuarioPage() {
                                         </div>
 
                                         {/* Seguridad */}
-                                        {/* <section>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full"></div>
-                                                Cambiar Contraseña
-                                            </h4>
-
-                                            <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 mb-4">
-                                                <p className="text-yellow-800 text-sm">
-                                                    Deje en blanco si no desea cambiar la contraseña
-                                                </p>
-                                            </div>
-
-                                            <input
-                                                name="contrasena"
-                                                type="password"
-                                                value={formData.contrasena}
-                                                onChange={handleInputChange}
-                                                className="input-style"
-                                                placeholder="Nueva contraseña (opcional)"
-                                            />
-                                        </section> */}
 
                                         <div className="mb-8">
                                             <div className="flex items-center gap-3 mb-6">
@@ -1289,7 +1111,7 @@ export function GestionUsuarioPage() {
 
                                             <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl p-4 mb-6">
                                                 <p className="text-yellow-800 text-sm flex items-center gap-2">
-                                                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                                    
                                                     Deje en blanco si no desea cambiar la contraseña actual
                                                 </p>
                                             </div>
