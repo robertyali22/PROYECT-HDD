@@ -1,0 +1,14 @@
+name: Cerrar Incidente cuando se resuelve
+on:
+pull_request:
+types: [closed]
+jobs:
+close_issue:
+if: github.event.pull_request.merged == true
+runs-on: ubuntu-latest
+steps:
+- name: Cerrar el incidente relacionado
+uses: peter-evans/close-issue@v3
+with:
+comment: |
+🔧 Incidente resuelto y mergeado con éxito. Gracias por tu reporte.
