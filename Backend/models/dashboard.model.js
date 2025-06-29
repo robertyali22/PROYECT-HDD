@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     ultimaActualizacion: {
       type: DataTypes.DATE
     }
+  }, {
+    tableName: 'dashboard',
+    timestamps: false
   });
 
   return Dashboard;

@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    soldadorId: {
+    usuarioId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     estado: {
       type: DataTypes.STRING
     }
+  }, {
+    tableName: 'tareas',
+    timestamps: false
   });
 
   return Tarea;

@@ -586,103 +586,88 @@ export function InventarioPage() {
                             </button>
                         </div>
                     </div>
-                )}
 
-                {/* Botones de Acción Globales (Sin cambios) */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                    <button
-                        onClick={handleNewRequest}
-                        className="w-full flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition"
-                    >
-                        <PlusIcon /> Nueva Solicitud de Material
-                    </button>
-                    <button className="w-full flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
-                        <DownloadIcon /> Exportar Resumen
-                    </button>
-                    <button className="w-full flex items-center justify-center bg-yellow-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-600 transition">
-                        <SettingsIcon /> Configuración de Resumen
-                    </button>
+
                 </div>
-            </div>
 
 
-                    {/* Modal para añadir producto (Sin cambios en la estructura, solo en handleSaveProduct) */}
-                    {showModal && (
-                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-                                {/* Modal Header */}
-                                <div className="flex justify-between items-center p-4 border-b border-slate-200">
-                                    <h2 className="text-lg font-semibold text-slate-800">Añadir Nuevo Producto</h2>
-                                    <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+                {/* Modal para añadir producto (Sin cambios en la estructura, solo en handleSaveProduct) */}
+                {showModal && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+                            {/* Modal Header */}
+                            <div className="flex justify-between items-center p-4 border-b border-slate-200">
+                                <h2 className="text-lg font-semibold text-slate-800">Añadir Nuevo Producto</h2>
+                                <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+                            </div>
+                            {/* Modal Body */}
+                            <div className="p-6 space-y-4 overflow-y-auto">
+                                {/* Campos del formulario (sin cambios) */}
+                                <div className="form-group">
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Nombre del Producto</label>
+                                    <input type="text" name="name" value={newItem.name} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ingrese nombre" />
                                 </div>
-                                {/* Modal Body */}
-                                <div className="p-6 space-y-4 overflow-y-auto">
-                                    {/* Campos del formulario (sin cambios) */}
-                                    <div className="form-group">
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Nombre del Producto</label>
-                                        <input type="text" name="name" value={newItem.name} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ingrese nombre" />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
-                                            <select name="category" value={newItem.category} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                                <option value="">Seleccione categoría</option>
-                                                {categoriesData.map(cat => <option key={cat.name} value={cat.name}>{cat.name}</option>)}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
-                                            <input type="text" name="sku" value={newItem.sku} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="SKU del producto" />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Inicial</label>
-                                            <input type="number" name="stock" value={newItem.stock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Cantidad" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Unidad de Medida</label>
-                                            <select name="unit" value={newItem.unit} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                                <option value="unit">Unidad</option>
-                                                <option value="kg">Kilogramos</option>
-                                                <option value="meter">Metros</option>
-                                                <option value="liter">Litros</option>
-                                                <option value="pack">Paquete</option>
-                                                <option value="cilindros">Cilindros</option>
-                                                <option value="carretes">Carretes</option>
-                                                <option value="unidades">Unidades</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Mínimo</label>
-                                            <input type="number" name="minStock" value={newItem.minStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel mínimo" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Ideal</label>
-                                            <input type="number" name="idealStock" value={newItem.idealStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel ideal" />
-                                        </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Categoría</label>
+                                        <select name="category" value={newItem.category} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                            <option value="">Seleccione categoría</option>
+                                            {categoriesData.map(cat => <option key={cat.name} value={cat.name}>{cat.name}</option>)}
+                                        </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Ubicación en Almacén</label>
-                                        <input type="text" name="location" value={newItem.location} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ejemplo: Estante A-12" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
-                                        <textarea name="description" value={newItem.description} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" rows="3" placeholder="Descripción del producto"></textarea>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">SKU</label>
+                                        <input type="text" name="sku" value={newItem.sku} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="SKU del producto" />
                                     </div>
                                 </div>
-                                {/* Modal Footer */}
-                                <div className="flex justify-end p-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
-                                    <button onClick={() => setShowModal(false)} className="bg-slate-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-600 transition mr-2">Cancelar</button>
-                                    <button onClick={handleSaveProduct} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition">Guardar Producto</button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Stock Inicial</label>
+                                        <input type="number" name="stock" value={newItem.stock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Cantidad" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Unidad de Medida</label>
+                                        <select name="unit" value={newItem.unit} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                            <option value="unit">Unidad</option>
+                                            <option value="kg">Kilogramos</option>
+                                            <option value="meter">Metros</option>
+                                            <option value="liter">Litros</option>
+                                            <option value="pack">Paquete</option>
+                                            <option value="cilindros">Cilindros</option>
+                                            <option value="carretes">Carretes</option>
+                                            <option value="unidades">Unidades</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Stock Mínimo</label>
+                                        <input type="number" name="minStock" value={newItem.minStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel mínimo" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Stock Ideal</label>
+                                        <input type="number" name="idealStock" value={newItem.idealStock} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Nivel ideal" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Ubicación en Almacén</label>
+                                    <input type="text" name="location" value={newItem.location} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Ejemplo: Estante A-12" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
+                                    <textarea name="description" value={newItem.description} onChange={handleInputChange} className="w-full p-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-sm" rows="3" placeholder="Descripción del producto"></textarea>
                                 </div>
                             </div>
+                            {/* Modal Footer */}
+                            <div className="flex justify-end p-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
+                                <button onClick={() => setShowModal(false)} className="bg-slate-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-600 transition mr-2">Cancelar</button>
+                                <button onClick={handleSaveProduct} className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition">Guardar Producto</button>
+                            </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
+
         </>
     );
 }

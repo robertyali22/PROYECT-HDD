@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     cliente: {
       type: DataTypes.STRING
     }
+  }, {
+    tableName: 'proyectos',
+    timestamps: false
   });
 
   return Proyecto;
