@@ -1,0 +1,58 @@
+name: 🛑 Incidente
+description: Reporta un incidente técnico en el sistema
+title: "[Incidente] - "
+labels: ["incidente"]
+body:
+  - type: input
+    id: nombre
+    attributes:
+      label: Nombre del incidente
+      placeholder: Capacidad limitada de almacenamiento en el Storage del Proyecto.
+    validations:
+      required: true
+
+  - type: input
+    id: lugar
+    attributes:
+      label: Lugar de ocurrencia
+      placeholder: Ejemplo En el Storage del Proyecto de Diseño de Sistemas
+    validations:
+      required: true
+
+  - type: textarea
+    id: titulo
+    attributes:
+      label: Título del problema
+      description: Describe brevemente el incidente
+      placeholder: Colapso de almacenamiento en BD...
+    validations:
+      required: true
+
+  - type: input
+    id: responsable
+    attributes:
+      label: Responsable
+      placeholder: Desarrollador de Sistemas
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del problema
+      placeholder: No se ha estipulado la memoria a utilizar...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acciones
+    attributes:
+      label: Acciones o Checklist
+      placeholder: |
+        - Inventariar los archivos almacenados
+        - Determinar el espacio de disco duro necesario
+        - Decidir adquirir más discos duros (SCSI o SAS)
+        - Adquirir discos básicos para liberar el Storage
+        - Adquirir almacenamiento en la nube y migrar archivos
+    validations:
+      required: false
