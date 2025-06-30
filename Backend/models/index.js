@@ -14,12 +14,12 @@ db.sequelize = sequelize;
 
 // Modelos
 db.Usuario = require('./usuario.model.js')(sequelize, DataTypes);
-db.Soldador = require('./soldador.model.js')(sequelize, DataTypes);
-db.Administrador = require('./administrador.model.js')(sequelize, DataTypes);
+db.Rol = require('./rol.model.js')(sequelize, DataTypes);
 db.Soldadura = require('./soldadura.model.js')(sequelize, DataTypes);
 db.ControlCalidad = require('./controlCalidad.model.js')(sequelize, DataTypes);
 db.Proyecto = require('./proyecto.model.js')(sequelize, DataTypes);
 db.Tarea = require('./tarea.model.js')(sequelize, DataTypes);
+db.CategoriaMaterial = require('./categoriaMaterial.model.js')(sequelize, DataTypes);
 db.Material = require('./material.model.js')(sequelize, DataTypes);
 db.SolicitudMaterial = require('./solicitudMaterial.model.js')(sequelize, DataTypes);
 db.Auditoria = require('./auditoria.model.js')(sequelize, DataTypes);
@@ -27,22 +27,31 @@ db.Dashboard = require('./dashboard.model.js')(sequelize, DataTypes);
 
 // Relaciones
 
-// Usuario → Soldador y Administrador
-db.Usuario.hasOne(db.Soldador, { foreignKey: 'usuarioId' });
-db.Soldador.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
+// Usuario → Rol
+db.Usuario.belongsTo(db.Rol, { foreignKey: 'rolId' });
+db.Rol.hasMany(db.Usuario, { foreignKey: 'rolId' });
 
-db.Usuario.hasOne(db.Administrador, { foreignKey: 'usuarioId' });
-db.Administrador.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
+// Usuario (rol: Soldador) → Soldadura
+db.Usuario.hasMany(db.Soldadura, { foreignKey: 'usuarioId' });
+db.Soldadura.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
 
-// Soldador → Soldadura
-db.Soldador.hasMany(db.Soldadura, { foreignKey: 'soldadorId' });
-db.Soldadura.belongsTo(db.Soldador, { foreignKey: 'soldadorId' });
+// Usuario (rol: Inspector) → Control de Calidad
+db.Usuario.hasMany(db.ControlCalidad, { foreignKey: 'usuarioId' });
+db.ControlCalidad.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
 
-// Administrador → ControlCalidad
-db.Administrador.hasMany(db.ControlCalidad, { foreignKey: 'administradorId' });
-db.ControlCalidad.belongsTo(db.Administrador, { foreignKey: 'administradorId' });
+// Usuario (rol: Administrador) → Auditorías
+db.Usuario.hasMany(db.Auditoria, { foreignKey: 'usuarioId' });
+db.Auditoria.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
 
-// Soldadura → ControlCalidad
+// Usuario (rol: Soldador) → SolicitudMaterial
+db.Usuario.hasMany(db.SolicitudMaterial, { foreignKey: 'usuarioId' });
+db.SolicitudMaterial.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
+
+// Usuario (rol: Soldador) → Tarea
+db.Usuario.hasMany(db.Tarea, { foreignKey: 'usuarioId' });
+db.Tarea.belongsTo(db.Usuario, { foreignKey: 'usuarioId' });
+
+// Soldadura → Control de Calidad
 db.Soldadura.hasOne(db.ControlCalidad, { foreignKey: 'soldaduraId' });
 db.ControlCalidad.belongsTo(db.Soldadura, { foreignKey: 'soldaduraId' });
 
@@ -58,44 +67,36 @@ db.Soldadura.belongsTo(db.Proyecto, { foreignKey: 'proyectoId' });
 db.Tarea.hasMany(db.Soldadura, { foreignKey: 'tareaId' });
 db.Soldadura.belongsTo(db.Tarea, { foreignKey: 'tareaId' });
 
-// Soldador → Tarea
-db.Soldador.hasMany(db.Tarea, { foreignKey: 'soldadorId' });
-db.Tarea.belongsTo(db.Soldador, { foreignKey: 'soldadorId' });
+// CategoriaMaterial → Materiales
+db.CategoriaMaterial.hasMany(db.Material, { foreignKey: 'categoriaId' });
+db.Material.belongsTo(db.CategoriaMaterial, { foreignKey: 'categoriaId' });
 
 // Material → SolicitudMaterial
 db.Material.hasMany(db.SolicitudMaterial, { foreignKey: 'materialId' });
 db.SolicitudMaterial.belongsTo(db.Material, { foreignKey: 'materialId' });
 
-// Soldador → SolicitudMaterial
-db.Soldador.hasMany(db.SolicitudMaterial, { foreignKey: 'soldadorId' });
-db.SolicitudMaterial.belongsTo(db.Soldador, { foreignKey: 'soldadorId' });
-
-// Administrador → Auditoria
-db.Administrador.hasMany(db.Auditoria, { foreignKey: 'administradorId' });
-db.Auditoria.belongsTo(db.Administrador, { foreignKey: 'administradorId' });
-
-// Dashboard → Proyecto (relación muchos a muchos)
+// Dashboard → Proyecto (muchos a muchos)
 db.Dashboard.belongsToMany(db.Proyecto, {
   through: 'Dashboard_Proyecto',
   foreignKey: 'dashboardId',
-  otherKey: 'proyectoId'
+  otherKey: 'proyectoId',
 });
 db.Proyecto.belongsToMany(db.Dashboard, {
   through: 'Dashboard_Proyecto',
   foreignKey: 'proyectoId',
-  otherKey: 'dashboardId'
+  otherKey: 'dashboardId',
 });
 
-// Dashboard → Material (relación muchos a muchos)
+// Dashboard → Material (muchos a muchos)
 db.Dashboard.belongsToMany(db.Material, {
   through: 'Dashboard_Material',
   foreignKey: 'dashboardId',
-  otherKey: 'materialId'
+  otherKey: 'materialId',
 });
 db.Material.belongsToMany(db.Dashboard, {
   through: 'Dashboard_Material',
   foreignKey: 'materialId',
-  otherKey: 'dashboardId'
+  otherKey: 'dashboardId',
 });
 
 module.exports = db;

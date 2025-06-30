@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    administradorId: {
+    usuarioId: {
       type: DataTypes.INTEGER
     },
     tipo: {
@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     acciones: {
       type: DataTypes.TEXT
     }
+  }, {
+    tableName: 'auditorias',
+    timestamps: false
   });
 
   return Auditoria;
