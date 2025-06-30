@@ -1,0 +1,37 @@
+stages:
+  - test
+  - build
+
+# ---------- TEST + LINT ----------
+react_tests:
+  stage: test
+  image: node:18
+  variables:
+    CI: "true"
+  before_script:
+    - npm install -g pnpm           # usa pnpm si lo prefieres, si no quítalo
+  script:
+    - cd Frontend
+    - pnpm install --frozen-lockfile   # o npm ci
+    - pnpm test -- --watch=false       # o npm test
+    - pnpm run lint                    # opcional eslint
+  artifacts:
+    when: always
+    paths:
+      - Frontend/coverage              # conserva cobertura si usas Vitest/Jest
+
+# ---------- BUILD ----------
+vite_build:
+  stage: build
+  image: node:18
+  needs: [react_tests]        # solo compila si los tests pasan
+  script:
+    - cd Frontend
+    - pnpm install --frozen-lockfile
+    - pnpm run build
+    # comprobar que en dist/ haya index.html y pasarlo por tidy
+    - apt-get update -qq && apt-get install -yq tidy
+    - tidy -e -q dist/index.html
+  artifacts:
+    paths:
+      - Frontend/dist             # artefacto del build
