@@ -5,26 +5,53 @@ on:
   pull_request:
 
 jobs:
-  react-ci:
+# -------------------------------  FRONTEND  ---------------------------------
+  frontend-ci:
+    name: 🌐 Frontend – React + Vite
     runs-on: ubuntu-latest
 
-    steps:
-      - name: 📥 Clonar repositorio
-        uses: actions/checkout@v3
+    defaults:                     # Todos los pasos de este job ejecutarán en ./Frontend
+      run:
+        working-directory: ./Frontend
 
-      - name: 🛠 Configurar Node.js
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 🛠 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: 📦 Instalar dependencias (npm ci)
+      - name: 📦 npm ci (Frontend)
         run: npm ci
 
-      - name: 🧪 Ejecutar pruebas (npm test)
+      - name: 🧪 npm test (Frontend)
         run: npm test
 
-      - name: 🏗 Compilar proyecto Vite (npm run build)
+      - name: 🏗 npm run build (Frontend)
         run: npm run build
 
-      - name: ✅ Todo correcto
-        run: echo "✔️ Tests, compilación y dependencias OK – Listo para merge"
+# -------------------------------  BACKEND  ----------------------------------
+  backend-ci:
+    name: 🛠 Backend – API Node
+    runs-on: ubuntu-latest
+    needs: frontend-ci            # Opcional: espera a que Frontend termine primero
+
+    defaults:
+      run:
+        working-directory: ./Backend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 🛠 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 npm ci (Backend)
+        run: npm ci
+
+      - name: 🧪 npm test (Backend)
+        # Si aún no tienes tests, deja un script dummy que devuelva exit 0
+        run: npm test
