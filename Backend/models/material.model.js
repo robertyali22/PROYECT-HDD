@@ -25,7 +25,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     ubicacion: {
       type: DataTypes.STRING
+    },
+    categoriaId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
+  }, {
+    tableName: 'materiales',
+    timestamps: false
   });
 
   return Material;

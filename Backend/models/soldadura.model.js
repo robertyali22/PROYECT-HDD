@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    soldadorId: {
+    usuarioId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -33,6 +33,9 @@ module.exports = (sequelize, DataTypes) => {
     imagenes: {
       type: DataTypes.TEXT
     }
+  }, {
+    tableName: 'soldaduras',
+    timestamps: false
   });
 
   return Soldadura;

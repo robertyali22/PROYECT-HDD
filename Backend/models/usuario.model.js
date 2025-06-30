@@ -1,5 +1,3 @@
-// Este modelo define la estructura de la tabla 'usuarios' en la base de datos.
-// Incluye campos como 'nombre', 'apellido', 'email', 'contraseña', 'rol', 'fechaCreacion' y 'estado'.
 module.exports = (sequelize, DataTypes) => {
   const Usuario = sequelize.define('Usuario', {
     id: {
@@ -25,20 +23,23 @@ module.exports = (sequelize, DataTypes) => {
     },
     telefono: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
     dni: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
-
     contrasena: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    rol: {
-      type: DataTypes.STRING,
-      allowNull: false
+    rolId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'roles',
+        key: 'id'
+      }
     },
     fechaCreacion: {
       type: DataTypes.DATE,
@@ -47,6 +48,28 @@ module.exports = (sequelize, DataTypes) => {
     estado: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
+    },
+
+    // Opcionales según el tipo de usuario
+    certificaciones: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    especialidad: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    nivelExperiencia: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    departamento: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    zonaSupervision: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     tableName: 'usuarios',

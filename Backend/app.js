@@ -12,11 +12,8 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 const usuarioRoutes = require('./routes/usuario.routes');
 app.use('/api/usuarios', usuarioRoutes);
 
-const soldadorRoutes = require('./routes/soldador.routes');
-app.use('/api/soldadores', soldadorRoutes);
-
-const administradorRoutes = require('./routes/administrador.routes');
-app.use('/api/administradores', administradorRoutes);
+const rolRoutes = require('./routes/rol.routes');
+app.use('/api/roles', rolRoutes);
 
 const soldaduraRoutes = require('./routes/soldadura.routes');
 app.use('/api/soldaduras', soldaduraRoutes);
@@ -29,6 +26,9 @@ app.use('/api/proyectos', proyectoRoutes);
 
 const tareaRoutes = require('./routes/tarea.routes');
 app.use('/api/tareas', tareaRoutes);
+
+const categoriaMaterialRoutes = require('./routes/categoriaMaterial.routes');
+app.use('/api/categorias-material', categoriaMaterialRoutes);
 
 const materialRoutes = require('./routes/material.routes');
 app.use('/api/materiales', materialRoutes);

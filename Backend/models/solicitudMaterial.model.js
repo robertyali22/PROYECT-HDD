@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    soldadorId: {
+    usuarioId: {
       type: DataTypes.INTEGER
     },
     materialId: {
@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     justificacion: {
       type: DataTypes.TEXT
     }
+  }, {
+    tableName: 'solicitudes_material',
+    timestamps: false
   });
 
   return SolicitudMaterial;
