@@ -1,0 +1,30 @@
+name: CI Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  react-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: 🛠 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 Instalar dependencias (npm ci)
+        run: npm ci
+
+      - name: 🧪 Ejecutar pruebas (npm test)
+        run: npm test
+
+      - name: 🏗 Compilar proyecto Vite (npm run build)
+        run: npm run build
+
+      - name: ✅ Todo correcto
+        run: echo "✔️ Tests, compilación y dependencias OK – Listo para merge"

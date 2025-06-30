@@ -586,7 +586,7 @@ export function InventarioPage() {
                             </button>
                         </div>
                     </div>
-                )}
+            
 
                 {/* Botones de Acción Globales (Sin cambios) */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
@@ -682,7 +682,8 @@ export function InventarioPage() {
                         </div>
                     )}
                 </div>
-            </div>
+            
+            
         </>
     );
 }
