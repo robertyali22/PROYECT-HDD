@@ -270,7 +270,7 @@ export function RegistroPage() {
                           <th className="p-2 border-b">Amperaje/Voltaje</th>
                           <th className="p-2 border-b">Fotos</th>
                           <th className="p-2 border-b">Obs.</th>
-                        </tr>
+                        
                       </thead>
                       <tbody>
                         {records.map((r, idx) => (
