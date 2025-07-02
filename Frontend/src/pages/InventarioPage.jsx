@@ -213,7 +213,7 @@ export function InventarioPage() {
         // Lógica para mostrar detalles (modal, nueva página, etc.)
         const request = requests.find(r => r.id === requestId);
         console.log(`Ver detalles de la solicitud ${requestId}:`, request);
-        alert(`Detalles de Solicitud ${requestId}:\nSolicitante: ${request?.applicant}\nProyecto: ${request?.project}\nItems: ${request?.items}\nEstado: ${request?.status}`);
+        alert(`Detalles de la Solicitud ${requestId}:\nSolicitante: ${request?.applicant}\nProyecto: ${request?.project}\nItems: ${request?.items}\nEstado: ${request?.status}`);
     };
 
     const handleNewRequest = () => {

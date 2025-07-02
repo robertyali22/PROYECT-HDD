@@ -1,38 +1,28 @@
-name: Deploy to GitHub Pages
+name: Deploy to Vercel
 
 on:
   push:
     branches:
       - master
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar el repositorio
+      - name: Clonar repositorio
         uses: actions/checkout@v4
 
-      - name: Usar Node.js
+      - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Instalar dependencias
-        working-directory: ./Frontend
         run: npm install
 
-      - name: Build del sitio
-        working-directory: ./Frontend
+      - name: Build del proyecto
         run: npm run build
 
-      - name: Subir a GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./Frontend/dist
+      - name: Desplegar a Vercel
+        run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
