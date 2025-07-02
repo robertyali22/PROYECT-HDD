@@ -20,11 +20,14 @@ jobs:
 
       - name: Instalar dependencias
         run: npm install
+        working-directory: ./Frontend
 
       - name: Build del proyecto
         run: npm run build
+        working-directory: ./Frontend
 
       - name: Desplegar a Vercel
         run: |
           npx vercel pull --yes --token ${{ secrets.VERCEL_TOKEN }}
           npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+        working-directory: ./Frontend
