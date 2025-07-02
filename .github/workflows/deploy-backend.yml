@@ -1,0 +1,59 @@
+name: Continuous Deployment - Backend
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    uses: ./.github/workflows/build-and-test.yml
+    
+  deploy-to-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Deploy to Staging
+      run: |
+        echo "Desplegando en entorno de staging..."
+        # Aquí irían los comandos específicos para tu despliegue
+        # Por ejemplo para AWS, Azure, etc.
+        # Ejemplo genérico:
+        npm run deploy -- --env=staging
+        
+  deploy-to-production:
+    needs: deploy-to-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Deploy to Production
+      run: |
+        echo "Desplegando en entorno de producción..."
+        # Comandos para despliegue en producción
+        npm run deploy -- --env=production
