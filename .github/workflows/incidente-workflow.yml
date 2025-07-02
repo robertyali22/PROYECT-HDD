@@ -1,0 +1,21 @@
+name: Automatización de Incidentes
+on:
+issues:
+types: [opened, labeled]
+jobs:
+auto_manage_incidentes:
+runs-on: ubuntu-latest
+steps:
+- name: Verificar etiqueta de incidente
+if: contains(github.event.issue.labels.*.name, 'incidente')
+uses: actions/github-script@v7
+with:
+script: |
+const issue_number = context.payload.issue.number;
+const project_id = 1234567890; // Reemplazar con tu project ID
+const column_id = 9876543210; // Columna "Nuevo"
+github.rest.projects.createCard({
+column_id,
+content_id: issue_number,
+content_type: "Issue"
+});
