@@ -20,11 +20,9 @@ jobs:
 
       - name: Instalar dependencias
         run: npm install
-        working-directory: ./backend
 
       - name: Ejecutar pruebas
         run: npm test || echo "sin pruebas"
-        working-directory: ./backend
 
   deploy:
     needs: build
@@ -32,5 +30,4 @@ jobs:
 
     steps:
       - name: Llamar API de Render para deploy
-        run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
